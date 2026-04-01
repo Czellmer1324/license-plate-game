@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: newuser
+      POSTGRES_PASSWORD: changeinprod!
+      POSTGRES_DB: license-plate-game
