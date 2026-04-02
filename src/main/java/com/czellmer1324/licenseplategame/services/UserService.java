@@ -1,6 +1,7 @@
 package com.czellmer1324.licenseplategame.services;
 
 import com.czellmer1324.licenseplategame.entities.SpottedStates;
+import com.czellmer1324.licenseplategame.jwt.JwtUtils;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.LoginDTO;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateDTO;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.*;
@@ -9,25 +10,20 @@ import com.czellmer1324.licenseplategame.repository.UserRepository;
 import com.czellmer1324.licenseplategame.entities.User;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserDTO;
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final SpottedStateRepository spottedRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final EntityManager manager;
-
-    public UserService(UserRepository userRepository, SpottedStateRepository spot,
-                       BCryptPasswordEncoder passwordEncoder, EntityManager manager) {
-        this.userRepository = userRepository;
-        this.spottedRepository = spot;
-        this.passwordEncoder = passwordEncoder;
-        this.manager = manager;
-    }
+    private final JwtUtils jwtUtils;
 
     public CreateUserResponse addUser(AddUserDTO userInfo) {
         boolean exists = userRepository.existsByUserName(userInfo.userName());
@@ -59,7 +55,8 @@ public class UserService {
         boolean passMatch = passwordEncoder.matches(info.password(), optionalUser.get().getPassword());
 
         if (!passMatch) return "Password do not match";
-        else return "Success, this is where JWT would be returned";
+        //create jwt token
+        else return jwtUtils.generateTokenFromID(optionalUser.get().getUserId());
     }
 
     public UserReturnInfo getUserInfo(int id) {
