@@ -3,6 +3,7 @@ package com.czellmer1324.licenseplategame.services;
 import com.czellmer1324.licenseplategame.entities.SpottedStates;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateRequest;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.StateMarkedResponse;
+import com.czellmer1324.licenseplategame.mappings.returnobjects.StateUnmarkedResponse;
 import com.czellmer1324.licenseplategame.repository.SpottedStateRepository;
 import com.czellmer1324.licenseplategame.repository.UserRepository;
 import com.czellmer1324.licenseplategame.entities.User;
@@ -47,19 +48,28 @@ public class UserService {
 
     public StateMarkedResponse markState(SpotStateRequest info) {
         if (info.userId() <= 0) {
-            return new StateMarkedResponse(false, "Id cannot be less than 0");
+            return new StateMarkedResponse(false, "Id cannot be less than 0", null);
         }
 
         if (info.stateCode().isEmpty() || info.stateCode().length() > 2) {
-            return new StateMarkedResponse(false, "Improper state code.");
+            return new StateMarkedResponse(false, "Improper state code.", null);
         }
 
         //check to make sure the user exists
         if (!userRepository.existsById(info.userId())) {
-            return new StateMarkedResponse(false, "User does not exist");
+            return new StateMarkedResponse(false, "User does not exist", null);
         }
 
-        spottedRepository.save(new SpottedStates(manager.getReference(User.class, info.userId()), info.stateCode()));
-        return new StateMarkedResponse(true, "State marked");
+        SpottedStates newSpot = spottedRepository.save(new SpottedStates(manager.getReference(User.class, info.userId()), info.stateCode()));
+        return new StateMarkedResponse(true, "State marked", newSpot.getSpottedId());
+    }
+
+    public StateUnmarkedResponse unmarkState(Long stateMarkID) {
+        if (!spottedRepository.existsById(stateMarkID)) {
+            return new StateUnmarkedResponse(false, "Does not exist");
+        }
+
+        spottedRepository.deleteById(stateMarkID);
+        return new StateUnmarkedResponse(true, "Successfully unmarked state");
     }
 }

@@ -5,6 +5,7 @@ import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserRequest;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateRequest;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.CreateUserResponse;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.StateMarkedResponse;
+import com.czellmer1324.licenseplategame.mappings.returnobjects.StateUnmarkedResponse;
 import com.czellmer1324.licenseplategame.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,17 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } else {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+    }
+
+    @PostMapping("/unmark-state/{markedStateId}")
+    public ResponseEntity<?> deleteStateMark(@PathVariable Long markedStateId) {
+        StateUnmarkedResponse response = service.unmarkState(markedStateId);
+
+        if (!response.unmarked()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
     }
 }
