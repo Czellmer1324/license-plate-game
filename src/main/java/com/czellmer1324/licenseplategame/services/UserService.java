@@ -5,6 +5,7 @@ import com.czellmer1324.licenseplategame.mappings.requestobjects.LoginDTO;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateDTO;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.StateMarkedResponse;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.StateUnmarkedResponse;
+import com.czellmer1324.licenseplategame.mappings.returnobjects.UserReturnInfo;
 import com.czellmer1324.licenseplategame.repository.SpottedStateRepository;
 import com.czellmer1324.licenseplategame.repository.UserRepository;
 import com.czellmer1324.licenseplategame.entities.User;
@@ -62,6 +63,17 @@ public class UserService {
 
         if (!passMatch) return "Password do not match";
         else return "Success, this is where JWT would be returned";
+    }
+
+    public UserReturnInfo getUserInfo(int id) {
+        Optional<User> opUser = userRepository.findById(id);
+
+        if (opUser.isEmpty()) return new UserReturnInfo(-1, null, null, null, null);
+
+        User user = opUser.get();
+
+        return new UserReturnInfo(user.getUserId(), user.getUserName(), user.getFirstName(), user.getLastName(),
+                user.getEmail());
     }
 
     public StateMarkedResponse markState(SpotStateDTO info) {

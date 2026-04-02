@@ -6,6 +6,7 @@ import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateDTO;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.CreateUserResponse;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.StateMarkedResponse;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.StateUnmarkedResponse;
+import com.czellmer1324.licenseplategame.mappings.returnobjects.UserReturnInfo;
 import com.czellmer1324.licenseplategame.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,17 @@ public class UserController {
     public String login(@RequestBody LoginDTO info) {
         // will return JWT token, have separate method to retrieve user info after authenticated with JWT
         return service.login(info);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getUserInfo(@PathVariable int userId) {
+        //This will change, and we will get the user ID from the JWT
+        UserReturnInfo userInfo = service.getUserInfo(userId);
+        if (userInfo.id() == -1) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(userInfo);
+        }
     }
 
     @PostMapping("/mark-state")
