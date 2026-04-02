@@ -1,17 +1,20 @@
 package com.czellmer1324.licenseplategame.services;
 
 import com.czellmer1324.licenseplategame.entities.SpottedStates;
-import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateRequest;
+import com.czellmer1324.licenseplategame.mappings.requestobjects.LoginDTO;
+import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateDTO;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.StateMarkedResponse;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.StateUnmarkedResponse;
 import com.czellmer1324.licenseplategame.repository.SpottedStateRepository;
 import com.czellmer1324.licenseplategame.repository.UserRepository;
 import com.czellmer1324.licenseplategame.entities.User;
-import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserRequest;
+import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserDTO;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.CreateUserResponse;
 import jakarta.persistence.EntityManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -28,7 +31,7 @@ public class UserService {
         this.manager = manager;
     }
 
-    public CreateUserResponse addUser(AddUserRequest userInfo) {
+    public CreateUserResponse addUser(AddUserDTO userInfo) {
         boolean exists = userRepository.existsByUserName(userInfo.userName());
         if (exists) {
             return new CreateUserResponse(false, "A user already exists with that username.");
@@ -46,7 +49,22 @@ public class UserService {
 
     }
 
-    public StateMarkedResponse markState(SpotStateRequest info) {
+    public String login(LoginDTO info) {
+        // Retrieve the user by the userName, may be null
+        Optional<User> optionalUser = userRepository.findByUserName(info.userName());
+        // check to make sure the user exists in the database with their username
+        if (optionalUser.isEmpty()) {
+            return "User does not exist";
+        }
+
+        //check if password matches
+        boolean passMatch = passwordEncoder.matches(info.password(), optionalUser.get().getPassword());
+
+        if (!passMatch) return "Password do not match";
+        else return "Success, this is where JWT would be returned";
+    }
+
+    public StateMarkedResponse markState(SpotStateDTO info) {
         if (info.userId() <= 0) {
             return new StateMarkedResponse(false, "Id cannot be less than 0", null);
         }

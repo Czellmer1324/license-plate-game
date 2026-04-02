@@ -1,13 +1,12 @@
 package com.czellmer1324.licenseplategame.controller;
 
-import com.czellmer1324.licenseplategame.entities.SpottedStates;
-import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserRequest;
-import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateRequest;
+import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserDTO;
+import com.czellmer1324.licenseplategame.mappings.requestobjects.LoginDTO;
+import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateDTO;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.CreateUserResponse;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.StateMarkedResponse;
 import com.czellmer1324.licenseplategame.mappings.returnobjects.StateUnmarkedResponse;
 import com.czellmer1324.licenseplategame.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +21,18 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public CreateUserResponse addUser(@RequestBody AddUserRequest userInfo) {
+    public CreateUserResponse addUser(@RequestBody AddUserDTO userInfo) {
         return service.addUser(userInfo);
     }
 
+    @PostMapping("login")
+    public String login(@RequestBody LoginDTO info) {
+        // will return JWT token, have separate method to retrieve user info after authenticated with JWT
+        return service.login(info);
+    }
+
     @PostMapping("/mark-state")
-    public ResponseEntity<?> markState(@RequestBody SpotStateRequest info) {
+    public ResponseEntity<?> markState(@RequestBody SpotStateDTO info) {
         StateMarkedResponse response = service.markState(info);
 
         if (!response.marked()) {
