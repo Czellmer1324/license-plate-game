@@ -1,16 +1,16 @@
 package com.czellmer1324.licenseplategame.controller;
 
+import com.czellmer1324.licenseplategame.entities.SpottedStates;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserDTO;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.LoginDTO;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateDTO;
-import com.czellmer1324.licenseplategame.mappings.returnobjects.CreateUserResponse;
-import com.czellmer1324.licenseplategame.mappings.returnobjects.StateMarkedResponse;
-import com.czellmer1324.licenseplategame.mappings.returnobjects.StateUnmarkedResponse;
-import com.czellmer1324.licenseplategame.mappings.returnobjects.UserReturnInfo;
+import com.czellmer1324.licenseplategame.mappings.returnobjects.*;
 import com.czellmer1324.licenseplategame.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -62,6 +62,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+    }
+
+    @GetMapping("/marked/{userId}")
+    public ResponseEntity<?> getMarkedStates(@PathVariable int userId) {
+        // This will change to where we will get user ID from JWT token
+        Optional<Iterable<GetMarkedStatesResponse>> states = service.getMarkedStates(userId);
+
+        if (states.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(states.get());
         }
     }
 }

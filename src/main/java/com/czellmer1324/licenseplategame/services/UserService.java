@@ -3,14 +3,11 @@ package com.czellmer1324.licenseplategame.services;
 import com.czellmer1324.licenseplategame.entities.SpottedStates;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.LoginDTO;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateDTO;
-import com.czellmer1324.licenseplategame.mappings.returnobjects.StateMarkedResponse;
-import com.czellmer1324.licenseplategame.mappings.returnobjects.StateUnmarkedResponse;
-import com.czellmer1324.licenseplategame.mappings.returnobjects.UserReturnInfo;
+import com.czellmer1324.licenseplategame.mappings.returnobjects.*;
 import com.czellmer1324.licenseplategame.repository.SpottedStateRepository;
 import com.czellmer1324.licenseplategame.repository.UserRepository;
 import com.czellmer1324.licenseplategame.entities.User;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserDTO;
-import com.czellmer1324.licenseplategame.mappings.returnobjects.CreateUserResponse;
 import jakarta.persistence.EntityManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -101,5 +98,14 @@ public class UserService {
 
         spottedRepository.deleteById(stateMarkID);
         return new StateUnmarkedResponse(true, "Successfully unmarked state");
+    }
+
+    public Optional<Iterable<GetMarkedStatesResponse>> getMarkedStates(int userId) {
+        //check to make sure the user exists
+        if (!userRepository.existsById(userId)) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(spottedRepository.findAllByUserUserId(userId));
     }
 }
