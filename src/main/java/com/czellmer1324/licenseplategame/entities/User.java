@@ -1,4 +1,4 @@
-package com.czellmer1324.licenseplategame.repository.entities;
+package com.czellmer1324.licenseplategame.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -3,21 +3,26 @@ package com.czellmer1324.licenseplategame.services;
 import com.czellmer1324.licenseplategame.repository.GameRepository;
 import com.czellmer1324.licenseplategame.repository.SpottedStateRepository;
 import com.czellmer1324.licenseplategame.repository.UserRepository;
-import com.czellmer1324.licenseplategame.repository.entities.User;
-import com.czellmer1324.licenseplategame.requestobjects.AddUserRequest;
-import com.czellmer1324.licenseplategame.returnobjects.CreateUserResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.czellmer1324.licenseplategame.entities.User;
+import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserRequest;
+import com.czellmer1324.licenseplategame.mappings.returnobjects.CreateUserResponse;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-    @Autowired
-    private GameRepository gameRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private SpottedStateRepository spottedRepository;
+    private final GameRepository gameRepository;
+    private final UserRepository userRepository;
+    private final SpottedStateRepository spottedRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository, GameRepository gameRepository, SpottedStateRepository spot,
+                       BCryptPasswordEncoder passwordEncoder) {
+        this.gameRepository = gameRepository;
+        this.userRepository = userRepository;
+        this.spottedRepository = spot;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public CreateUserResponse addUser(AddUserRequest userInfo) {
         boolean exists = userRepository.existsByUserName(userInfo.userName());
@@ -26,8 +31,7 @@ public class UserService {
         }
 
         //hash the password so it is not stored in plain text
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-        String hashedPass = encoder.encode(userInfo.password());
+        String hashedPass = passwordEncoder.encode(userInfo.password());
 
         try {
             userRepository.save(new User(userInfo.userName(), userInfo.firstName(), userInfo.lastName(), userInfo.email(), hashedPass));
