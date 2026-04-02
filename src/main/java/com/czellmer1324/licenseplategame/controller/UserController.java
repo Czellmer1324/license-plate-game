@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -65,10 +66,12 @@ public class UserController {
         }
     }
 
-    @GetMapping("/marked/{userId}")
-    public ResponseEntity<?> getMarkedStates(@PathVariable int userId) {
+    @GetMapping("/marked")
+    public ResponseEntity<?> getMarkedStates(@RequestHeader Map<String, String> headers) {
+        String authString = headers.get("Authorization");
+        IO.println(authString);
         // This will change to where we will get user ID from JWT token
-        Optional<Iterable<GetMarkedStatesResponse>> states = service.getMarkedStates(userId);
+        Optional<Iterable<GetMarkedStatesResponse>> states = service.getMarkedStates(authString);
 
         if (states.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");

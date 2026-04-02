@@ -11,6 +11,8 @@ import com.czellmer1324.licenseplategame.entities.User;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserDTO;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -97,12 +99,23 @@ public class UserService {
         return new StateUnmarkedResponse(true, "Successfully unmarked state");
     }
 
-    public Optional<Iterable<GetMarkedStatesResponse>> getMarkedStates(int userId) {
-        //check to make sure the user exists
-        if (!userRepository.existsById(userId)) {
+    public Optional<Iterable<GetMarkedStatesResponse>> getMarkedStates(String authString) {
+        //TODO: MAKE THIS A PRIVATE FUNCTION TO BE USED BY OTHER REQUESTS
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            Object principal = auth.getPrincipal();
+            if (principal instanceof User) {
+                int userId = ((User) principal).getUserId();
+                if (!userRepository.existsById(userId)) {
+                    return Optional.empty();
+                }
+
+                return Optional.ofNullable(spottedRepository.findAllByUserUserId(userId));
+            } else {
+                return Optional.empty();
+            }
+        } else {
             return Optional.empty();
         }
-
-        return Optional.ofNullable(spottedRepository.findAllByUserUserId(userId));
     }
 }
