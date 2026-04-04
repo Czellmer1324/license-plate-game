@@ -4,6 +4,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
+@Slf4j
 public class JwtUtils {
     @Value("${jwt.secret}")
     private String secret;
@@ -51,9 +53,9 @@ public class JwtUtils {
             Jwts.parser().verifyWith(key()).build().parseSignedClaims(authToken);
             return true;
         } catch (JwtException e) {
-            IO.println("Something went wrong with JWT ");
+            log.info("Something went wrong with JWT");
         } catch (IllegalArgumentException e) {
-            IO.println("JWT claims is empty");
+            log.info("JWT claims is empty");
         }
         return false;
     }

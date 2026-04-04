@@ -57,14 +57,14 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByUserName(info.userName());
         // check to make sure the user exists in the database with their username
         if (optionalUser.isEmpty()) {
-            return new ServiceResponse(Map.of("Message", "User does not exist"), HttpStatus.NOT_FOUND);
+            return new ServiceResponse(Map.of("Message", "User does not exist"), HttpStatus.UNAUTHORIZED);
         }
 
         //check if password matches
         boolean passMatch = passwordEncoder.matches(info.password(), optionalUser.get().getPassword());
 
         if (!passMatch) {
-            return new ServiceResponse(Map.of("Message", "Incorrect password"), HttpStatus.BAD_REQUEST);
+            return new ServiceResponse(Map.of("Message", "Incorrect password"), HttpStatus.UNAUTHORIZED);
         }
 
         //create jwt token
