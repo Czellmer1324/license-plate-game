@@ -54,17 +54,13 @@ public class UserController {
         }
     }
 
-    @PostMapping("/unmark-state/{markedStateId}")
+    // Updated this to new method
+    @DeleteMapping("/unmark-state/{markedStateId}")
     public ResponseEntity<?> deleteStateMark(@PathVariable Long markedStateId) {
-        StateUnmarkedResponse response = service.unmarkState(markedStateId);
-
-        if (!response.unmarked()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        }
+        return service.unmarkState(markedStateId);
     }
 
+    // Updated this to new way already
     @GetMapping("/marked")
     public ResponseEntity<?> getMarkedStates() {
         return service.getMarkedStates();

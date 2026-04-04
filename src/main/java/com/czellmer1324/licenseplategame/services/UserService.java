@@ -11,6 +11,7 @@ import com.czellmer1324.licenseplategame.entities.User;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserDTO;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -94,27 +95,28 @@ public class UserService {
         return new StateMarkedResponse(true, "State marked", newSpot.getSpottedId());
     }
 
-    public StateUnmarkedResponse unmarkState(Long stateMarkID) {
+    // Updated this
+    public ResponseEntity<?> unmarkState(Long stateMarkID) {
         if (!spottedRepository.existsById(stateMarkID)) {
-            return new StateUnmarkedResponse(false, "Does not exist");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Message", "Spotted ID does not exist"));
         }
 
         spottedRepository.deleteById(stateMarkID);
-        return new StateUnmarkedResponse(true, "Successfully unmarked state");
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("Message", "Map created successfully"));
     }
 
+    // Updated to new way already using JWT
     public ResponseEntity<?> getMarkedStates() {
-        //TODO: MAKE THIS A PRIVATE FUNCTION TO BE USED BY OTHER REQUESTS
         Optional<Integer> opId = getUserIDFromAuth();
         Map<String, String> response = new HashMap<>();
         if (opId.isEmpty()) {
-            response.put("Error", "User not authenticated");
-            return ResponseEntity.status(405).body(response);
+            response.put("Message", "User not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
         Iterable<GetMarkedStatesResponse> spottedStates = spottedRepository.findAllByUserUserId(opId.get());
 
-        return ResponseEntity.status(200).body(spottedStates);
+        return ResponseEntity.status(HttpStatus.OK).body(spottedStates);
     }
 
     private Optional<Integer> getUserIDFromAuth() {
