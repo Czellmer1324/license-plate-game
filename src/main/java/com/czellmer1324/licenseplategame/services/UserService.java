@@ -49,20 +49,31 @@ public class UserService {
 
     }
 
-    public String login(LoginDTO info) {
+    public ResponseEntity<?> login(LoginDTO info) {
+        // Ensure username and password are present
+        if (info.userName().isEmpty() || info.password().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(Map.of("Message", "Username or password missing"));
+        }
+
         // Retrieve the user by the userName, may be null
         Optional<User> optionalUser = userRepository.findByUserName(info.userName());
         // check to make sure the user exists in the database with their username
         if (optionalUser.isEmpty()) {
-            return "User does not exist";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Message", "User does not exist"));
         }
 
         //check if password matches
         boolean passMatch = passwordEncoder.matches(info.password(), optionalUser.get().getPassword());
 
-        if (!passMatch) return "Password do not match";
+        if (!passMatch) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("Message", "Incorrect password"));
+        }
+
         //create jwt token
-        else return jwtUtils.generateTokenFromID(optionalUser.get().getUserId());
+        else {
+            String token = jwtUtils.generateTokenFromID(optionalUser.get().getUserId());
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("Token", token));
+        }
     }
 
     public ResponseEntity<?> getUserInfo() {

@@ -26,9 +26,8 @@ public class UserController {
         return service.addUser(userInfo);
     }
 
-    @PostMapping("login")
-    public String login(@RequestBody LoginDTO info) {
-        // will return JWT token, have separate method to retrieve user info after authenticated with JWT
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginDTO info) {
         return service.login(info);
     }
 
