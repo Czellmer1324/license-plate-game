@@ -1,6 +1,5 @@
 package com.czellmer1324.licenseplategame.controller;
 
-import com.czellmer1324.licenseplategame.entities.SpottedStates;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserDTO;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.LoginDTO;
 import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateDTO;
@@ -67,16 +66,7 @@ public class UserController {
     }
 
     @GetMapping("/marked")
-    public ResponseEntity<?> getMarkedStates(@RequestHeader Map<String, String> headers) {
-        String authString = headers.get("Authorization");
-        IO.println(authString);
-        // This will change to where we will get user ID from JWT token
-        Optional<Iterable<GetMarkedStatesResponse>> states = service.getMarkedStates(authString);
-
-        if (states.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(states.get());
-        }
+    public ResponseEntity<?> getMarkedStates() {
+        return service.getMarkedStates();
     }
 }
