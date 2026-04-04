@@ -2,13 +2,13 @@ package com.czellmer1324.licenseplategame.services;
 
 import com.czellmer1324.licenseplategame.entities.SpottedStates;
 import com.czellmer1324.licenseplategame.jwt.JwtUtils;
-import com.czellmer1324.licenseplategame.mappings.requestobjects.LoginDTO;
-import com.czellmer1324.licenseplategame.mappings.requestobjects.SpotStateDTO;
-import com.czellmer1324.licenseplategame.mappings.returnobjects.*;
+import com.czellmer1324.licenseplategame.dto.GetMarkedStatesDTO;
+import com.czellmer1324.licenseplategame.dto.LoginDTO;
+import com.czellmer1324.licenseplategame.dto.SpotStateDTO;
 import com.czellmer1324.licenseplategame.repository.SpottedStateRepository;
 import com.czellmer1324.licenseplategame.repository.UserRepository;
 import com.czellmer1324.licenseplategame.entities.User;
-import com.czellmer1324.licenseplategame.mappings.requestobjects.AddUserDTO;
+import com.czellmer1324.licenseplategame.dto.AddUserDTO;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,10 +31,10 @@ public class UserService {
     private final EntityManager manager;
     private final JwtUtils jwtUtils;
 
-    public CreateUserResponse addUser(AddUserDTO userInfo) {
+    public ResponseEntity<?> addUser(AddUserDTO userInfo) {
         boolean exists = userRepository.existsByUserName(userInfo.userName());
         if (exists) {
-            return new CreateUserResponse(false, "A user already exists with that username.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("Message", "User name already exists"));
         }
 
         //hash the password so it is not stored in plain text
@@ -42,9 +42,9 @@ public class UserService {
 
         try {
             userRepository.save(new User(userInfo.userName(), userInfo.firstName(), userInfo.lastName(), userInfo.email(), hashedPass));
-            return new CreateUserResponse(true, "User created");
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("Message", "User created successfully"));
         } catch (Exception e) {
-            return new CreateUserResponse(false, "Something went wrong");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Message", "Something went wrong"));
         }
 
     }
@@ -115,7 +115,6 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", newSpot.getSpottedId()));
     }
 
-    // Updated this
     public ResponseEntity<?> unmarkState(Long stateMarkID) {
         if (!spottedRepository.existsById(stateMarkID)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Message", "Spotted ID does not exist"));
@@ -125,7 +124,6 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("Message", "Unmarked successfully"));
     }
 
-    // Updated to new way already using JWT
     public ResponseEntity<?> getMarkedStates() {
         Optional<Integer> opId = getUserIDFromAuth();
         Map<String, String> response = new HashMap<>();
@@ -134,7 +132,7 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
-        Iterable<GetMarkedStatesResponse> spottedStates = spottedRepository.findAllByUserUserId(opId.get());
+        Iterable<GetMarkedStatesDTO> spottedStates = spottedRepository.findAllByUserUserId(opId.get());
 
         return ResponseEntity.status(HttpStatus.OK).body(spottedStates);
     }
