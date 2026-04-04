@@ -32,15 +32,9 @@ public class UserController {
         return service.login(info);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> getUserInfo(@PathVariable int userId) {
-        //This will change, and we will get the user ID from the JWT
-        UserReturnInfo userInfo = service.getUserInfo(userId);
-        if (userInfo.id() == -1) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(userInfo);
-        }
+    @GetMapping()
+    public ResponseEntity<?> getUserInfo() {
+        return service.getUserInfo();
     }
 
     // Updated this to new method

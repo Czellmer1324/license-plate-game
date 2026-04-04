@@ -19,7 +19,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -66,15 +65,23 @@ public class UserService {
         else return jwtUtils.generateTokenFromID(optionalUser.get().getUserId());
     }
 
-    public UserReturnInfo getUserInfo(int id) {
-        Optional<User> opUser = userRepository.findById(id);
+    public ResponseEntity<?> getUserInfo() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (opUser.isEmpty()) return new UserReturnInfo(-1, null, null, null, null);
-
-        User user = opUser.get();
-
-        return new UserReturnInfo(user.getUserId(), user.getUserName(), user.getFirstName(), user.getLastName(),
-                user.getEmail());
+        if (auth != null && auth.isAuthenticated()) {
+            Object principal = auth.getPrincipal();
+            if (principal instanceof User user) {
+                Map<String, String> response = Map.of("User Name", user.getUserName(),
+                        "firstName", user.getFirstName(),
+                        "lastName", user.getLastName(),
+                        "email", user.getEmail());
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Message", "User not authenticated"));
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Message", "User not authenticated"));
+        }
     }
 
     public ResponseEntity<?> markState(SpotStateDTO info) {
