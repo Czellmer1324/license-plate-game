@@ -9,14 +9,11 @@ import com.czellmer1324.licenseplategame.entities.User;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
@@ -57,14 +54,14 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByUserName(info.userName());
         // check to make sure the user exists in the database with their username
         if (optionalUser.isEmpty()) {
-            return new ServiceResponse(Map.of("Message", "User does not exist"), HttpStatus.UNAUTHORIZED);
+            return new ServiceResponse(Map.of("Message", "Invalid Credentials"), HttpStatus.UNAUTHORIZED);
         }
 
         //check if password matches
         boolean passMatch = passwordEncoder.matches(info.password(), optionalUser.get().getPassword());
 
         if (!passMatch) {
-            return new ServiceResponse(Map.of("Message", "Incorrect password"), HttpStatus.UNAUTHORIZED);
+            return new ServiceResponse(Map.of("Message", "Invalid Credentials"), HttpStatus.UNAUTHORIZED);
         }
 
         //create jwt token
@@ -110,7 +107,7 @@ public class UserService {
         }
 
         SpottedStates newSpot = spottedRepository.save(new SpottedStates(manager.getReference(User.class, opId.get()), info.stateCode()));
-        return new ServiceResponse(Map.of( "spottedId", newSpot.getSpottedId().toString(), "stateCode", newSpot.getStateCode()), HttpStatus.CREATED);
+        return new ServiceResponse(Map.of( "spottedId", newSpot.getSpottedId(), "stateCode", newSpot.getStateCode()), HttpStatus.CREATED);
     }
 
     public ServiceResponse unmarkState(Long id) {
@@ -128,9 +125,15 @@ public class UserService {
         return new ServiceResponse(Map.of("Message", "Unmarked successfully"), HttpStatus.OK);
     }
 
-    public Optional<Iterable<GetMarkedStatesDTO>> getMarkedStates() {
+    public ServiceResponse getMarkedStates() {
         Optional<Integer> opId = getUserIDFromAuth();
-        return opId.map(spottedRepository::findAllByUserUserId);
+
+        if (opId.isEmpty()) {
+            return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        }
+
+        return new ServiceResponse(spottedRepository.findAllByUserUserId(opId.get()), HttpStatus.OK);
+
     }
 
     private Optional<Integer> getUserIDFromAuth() {

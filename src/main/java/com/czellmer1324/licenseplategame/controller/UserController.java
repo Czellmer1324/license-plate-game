@@ -2,12 +2,8 @@ package com.czellmer1324.licenseplategame.controller;
 
 import com.czellmer1324.licenseplategame.dto.*;
 import com.czellmer1324.licenseplategame.services.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -50,12 +46,7 @@ public class UserController {
 
     @GetMapping("/marked")
     public ResponseEntity<?> getMarkedStates() {
-        Optional<Iterable<GetMarkedStatesDTO>> info = service.getMarkedStates();
-
-        if (info.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(info.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Message", "User is not authenticated"));
-        }
+        ServiceResponse info = service.getMarkedStates();
+        return ResponseEntity.status(info.code()).body(info.response());
     }
 }
