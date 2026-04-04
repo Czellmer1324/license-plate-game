@@ -1,11 +1,13 @@
 package com.czellmer1324.licenseplategame.controller;
 
-import com.czellmer1324.licenseplategame.dto.AddUserDTO;
-import com.czellmer1324.licenseplategame.dto.LoginDTO;
-import com.czellmer1324.licenseplategame.dto.SpotStateDTO;
+import com.czellmer1324.licenseplategame.dto.*;
 import com.czellmer1324.licenseplategame.services.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -18,31 +20,42 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<?> addUser(@RequestBody AddUserDTO userInfo) {
-        return service.addUser(userInfo);
+        ServiceResponse info = service.addUser(userInfo);
+        return ResponseEntity.status(info.code()).body(info.response());
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO info) {
-        return service.login(info);
+        ServiceResponse response = service.login(info);
+        return ResponseEntity.status(response.code()).body(response.response());
     }
 
     @GetMapping()
     public ResponseEntity<?> getUserInfo() {
-        return service.getUserInfo();
+        ServiceResponse info = service.getUserInfo();
+        return ResponseEntity.status(info.code()).body(info.response());
     }
 
     @PostMapping("/mark-state")
     public ResponseEntity<?> markState(@RequestBody SpotStateDTO info) {
-        return service.markState(info);
+        ServiceResponse response = service.markState(info);
+        return ResponseEntity.status(response.code()).body(response.response());
     }
 
     @DeleteMapping("/unmark-state/{markedStateId}")
-    public ResponseEntity<?> deleteStateMark(@PathVariable Long markedStateId) {
-        return service.unmarkState(markedStateId);
+    public ResponseEntity<?> deleteStateMark(@PathVariable String stateCode) {
+        ServiceResponse info = service.unmarkState(stateCode);
+        return ResponseEntity.status(info.code()).body(info.response());
     }
 
     @GetMapping("/marked")
     public ResponseEntity<?> getMarkedStates() {
-        return service.getMarkedStates();
+        Optional<Iterable<GetMarkedStatesDTO>> info = service.getMarkedStates();
+
+        if (info.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(info.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Message", "User is not authenticated"));
+        }
     }
 }

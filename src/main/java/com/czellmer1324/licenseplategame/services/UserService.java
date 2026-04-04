@@ -1,14 +1,11 @@
 package com.czellmer1324.licenseplategame.services;
 
+import com.czellmer1324.licenseplategame.dto.*;
 import com.czellmer1324.licenseplategame.entities.SpottedStates;
 import com.czellmer1324.licenseplategame.jwt.JwtUtils;
-import com.czellmer1324.licenseplategame.dto.GetMarkedStatesDTO;
-import com.czellmer1324.licenseplategame.dto.LoginDTO;
-import com.czellmer1324.licenseplategame.dto.SpotStateDTO;
 import com.czellmer1324.licenseplategame.repository.SpottedStateRepository;
 import com.czellmer1324.licenseplategame.repository.UserRepository;
 import com.czellmer1324.licenseplategame.entities.User;
-import com.czellmer1324.licenseplategame.dto.AddUserDTO;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,10 +29,10 @@ public class UserService {
     private final EntityManager manager;
     private final JwtUtils jwtUtils;
 
-    public ResponseEntity<?> addUser(AddUserDTO userInfo) {
+    public ServiceResponse addUser(AddUserDTO userInfo) {
         boolean exists = userRepository.existsByUserName(userInfo.userName());
         if (exists) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("Message", "User name already exists"));
+            return new ServiceResponse(Map.of("Message", "User name already exists"), HttpStatus.CONFLICT);
         }
 
         //hash the password so it is not stored in plain text
@@ -42,41 +40,41 @@ public class UserService {
 
         try {
             userRepository.save(new User(userInfo.userName(), userInfo.firstName(), userInfo.lastName(), userInfo.email(), hashedPass));
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("Message", "User created successfully"));
+            return new ServiceResponse(Map.of("Message", "User created successfully"), HttpStatus.CREATED);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Message", "Something went wrong"));
+            return new ServiceResponse(Map.of("Message", "Something went wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
-    public ResponseEntity<?> login(LoginDTO info) {
+    public ServiceResponse login(LoginDTO info) {
         // Ensure username and password are present
         if (info.userName().isEmpty() || info.password().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(Map.of("Message", "Username or password missing"));
+            return new ServiceResponse(Map.of("Message", "Username or password missing"), HttpStatus.UNPROCESSABLE_CONTENT);
         }
 
         // Retrieve the user by the userName, may be null
         Optional<User> optionalUser = userRepository.findByUserName(info.userName());
         // check to make sure the user exists in the database with their username
         if (optionalUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Message", "User does not exist"));
+            return new ServiceResponse(Map.of("Message", "User does not exist"), HttpStatus.NOT_FOUND);
         }
 
         //check if password matches
         boolean passMatch = passwordEncoder.matches(info.password(), optionalUser.get().getPassword());
 
         if (!passMatch) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("Message", "Incorrect password"));
+            return new ServiceResponse(Map.of("Message", "Incorrect password"), HttpStatus.BAD_REQUEST);
         }
 
         //create jwt token
         else {
             String token = jwtUtils.generateTokenFromID(optionalUser.get().getUserId());
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("Token", token));
+            return new ServiceResponse(Map.of("Token", token), HttpStatus.OK);
         }
     }
 
-    public ResponseEntity<?> getUserInfo() {
+    public ServiceResponse getUserInfo() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null && auth.isAuthenticated()) {
@@ -86,55 +84,53 @@ public class UserService {
                         "firstName", user.getFirstName(),
                         "lastName", user.getLastName(),
                         "email", user.getEmail());
-                return ResponseEntity.status(HttpStatus.OK).body(response);
+                return new ServiceResponse(response, HttpStatus.OK);
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Message", "User not authenticated"));
+                return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Message", "User not authenticated"));
+            return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
         }
     }
 
-    public ResponseEntity<?> markState(SpotStateDTO info) {
+    public ServiceResponse markState(SpotStateDTO info) {
         Optional<Integer> opId = getUserIDFromAuth();
 
         if (opId.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Message", "User not authenticated"));
+            return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
         }
 
         if (info.stateCode().length() != 2) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("Message", "Improper state code"));
+            return new ServiceResponse(Map.of("Message", "Improper state code"), HttpStatus.BAD_REQUEST);
         }
 
         // Make sure the state is not already marked
         if (spottedRepository.existsByUserUserIdAndStateCode(opId.get(), info.stateCode())) {
-            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(Map.of("Message", "State is already marked"));
+            return new ServiceResponse(Map.of("Message", "State is already marked"), HttpStatus.ALREADY_REPORTED);
         }
 
         SpottedStates newSpot = spottedRepository.save(new SpottedStates(manager.getReference(User.class, opId.get()), info.stateCode()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", newSpot.getSpottedId()));
+        return new ServiceResponse(Map.of( "stateCode", newSpot.getStateCode()), HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> unmarkState(Long stateMarkID) {
-        if (!spottedRepository.existsById(stateMarkID)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Message", "Spotted ID does not exist"));
-        }
-
-        spottedRepository.deleteById(stateMarkID);
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("Message", "Unmarked successfully"));
-    }
-
-    public ResponseEntity<?> getMarkedStates() {
+    public ServiceResponse unmarkState(String stateCode) {
         Optional<Integer> opId = getUserIDFromAuth();
-        Map<String, String> response = new HashMap<>();
+
         if (opId.isEmpty()) {
-            response.put("Message", "User not authenticated");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
         }
 
-        Iterable<GetMarkedStatesDTO> spottedStates = spottedRepository.findAllByUserUserId(opId.get());
+        if (!spottedRepository.existsByUserUserIdAndStateCode(opId.get(), stateCode)) {
+            return new ServiceResponse(Map.of("Message", "State not spotted for this user"), HttpStatus.NOT_FOUND);
+        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(spottedStates);
+        spottedRepository.deleteByUserUserIdAndStateCode(opId.get(), stateCode);
+        return new ServiceResponse(Map.of("Message", "Unmarked successfully"), HttpStatus.OK);
+    }
+
+    public Optional<Iterable<GetMarkedStatesDTO>> getMarkedStates() {
+        Optional<Integer> opId = getUserIDFromAuth();
+        return opId.map(spottedRepository::findAllByUserUserId);
     }
 
     private Optional<Integer> getUserIDFromAuth() {
