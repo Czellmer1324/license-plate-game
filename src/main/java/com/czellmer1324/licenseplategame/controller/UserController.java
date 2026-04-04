@@ -43,8 +43,8 @@ public class UserController {
     }
 
     @DeleteMapping("/unmark-state/{markedStateId}")
-    public ResponseEntity<?> deleteStateMark(@PathVariable String stateCode) {
-        ServiceResponse info = service.unmarkState(stateCode);
+    public ResponseEntity<?> deleteStateMark(@PathVariable Long markedStateId) {
+        ServiceResponse info = service.unmarkState(markedStateId);
         return ResponseEntity.status(info.code()).body(info.response());
     }
 

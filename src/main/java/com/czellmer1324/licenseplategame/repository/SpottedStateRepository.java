@@ -6,6 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface SpottedStateRepository extends CrudRepository<SpottedStates, Long> {
     Iterable<GetMarkedStatesDTO> findAllByUserUserId(int userId);
-    Boolean existsByUserUserIdAndStateCode(int userId, String stateCode);
-    void deleteByUserUserIdAndStateCode(int userId, String stateCode);
+    Boolean existsByUserUserIdAndSpottedId(int userId, Long spottedId);
+    Boolean existsByUserUserIdAndStateCode(int userId, String StateCode);
 }

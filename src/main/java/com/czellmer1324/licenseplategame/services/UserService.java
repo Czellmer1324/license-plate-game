@@ -110,21 +110,21 @@ public class UserService {
         }
 
         SpottedStates newSpot = spottedRepository.save(new SpottedStates(manager.getReference(User.class, opId.get()), info.stateCode()));
-        return new ServiceResponse(Map.of( "stateCode", newSpot.getStateCode()), HttpStatus.CREATED);
+        return new ServiceResponse(Map.of( "spottedId", newSpot.getSpottedId().toString(), "stateCode", newSpot.getStateCode()), HttpStatus.CREATED);
     }
 
-    public ServiceResponse unmarkState(String stateCode) {
+    public ServiceResponse unmarkState(Long id) {
         Optional<Integer> opId = getUserIDFromAuth();
 
         if (opId.isEmpty()) {
             return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
         }
 
-        if (!spottedRepository.existsByUserUserIdAndStateCode(opId.get(), stateCode)) {
+        if (!spottedRepository.existsByUserUserIdAndSpottedId(opId.get(), id)) {
             return new ServiceResponse(Map.of("Message", "State not spotted for this user"), HttpStatus.NOT_FOUND);
         }
 
-        spottedRepository.deleteByUserUserIdAndStateCode(opId.get(), stateCode);
+       spottedRepository.deleteById(id);
         return new ServiceResponse(Map.of("Message", "Unmarked successfully"), HttpStatus.OK);
     }
 
