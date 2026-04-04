@@ -6,4 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface SpottedStateRepository extends CrudRepository<SpottedStates, Long> {
     Iterable<GetMarkedStatesResponse> findAllByUserUserId(int userId);
+    Boolean existsByUserUserIdAndStateCode(int userId, String stateCode);
 }

@@ -77,22 +77,24 @@ public class UserService {
                 user.getEmail());
     }
 
-    public StateMarkedResponse markState(SpotStateDTO info) {
-        if (info.userId() <= 0) {
-            return new StateMarkedResponse(false, "Id cannot be less than 0", null);
+    public ResponseEntity<?> markState(SpotStateDTO info) {
+        Optional<Integer> opId = getUserIDFromAuth();
+
+        if (opId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Message", "User not authenticated"));
         }
 
-        if (info.stateCode().isEmpty() || info.stateCode().length() > 2) {
-            return new StateMarkedResponse(false, "Improper state code.", null);
+        if (info.stateCode().length() != 2) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("Message", "Improper state code"));
         }
 
-        //check to make sure the user exists
-        if (!userRepository.existsById(info.userId())) {
-            return new StateMarkedResponse(false, "User does not exist", null);
+        // Make sure the state is not already marked
+        if (spottedRepository.existsByUserUserIdAndStateCode(opId.get(), info.stateCode())) {
+            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(Map.of("Message", "State is already marked"));
         }
 
-        SpottedStates newSpot = spottedRepository.save(new SpottedStates(manager.getReference(User.class, info.userId()), info.stateCode()));
-        return new StateMarkedResponse(true, "State marked", newSpot.getSpottedId());
+        SpottedStates newSpot = spottedRepository.save(new SpottedStates(manager.getReference(User.class, opId.get()), info.stateCode()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", newSpot.getSpottedId()));
     }
 
     // Updated this
@@ -102,7 +104,7 @@ public class UserService {
         }
 
         spottedRepository.deleteById(stateMarkID);
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("Message", "Map created successfully"));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("Message", "Unmarked successfully"));
     }
 
     // Updated to new way already using JWT

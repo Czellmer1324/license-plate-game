@@ -43,15 +43,10 @@ public class UserController {
         }
     }
 
+    // Updated this to new method
     @PostMapping("/mark-state")
     public ResponseEntity<?> markState(@RequestBody SpotStateDTO info) {
-        StateMarkedResponse response = service.markState(info);
-
-        if (!response.marked()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }
+        return service.markState(info);
     }
 
     // Updated this to new method
