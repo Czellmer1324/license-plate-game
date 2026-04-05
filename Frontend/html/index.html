@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>License Plate Game</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../css/index.css">
+    </head>
+    <body>
+        <header>
+            <h1>License Plate Game</h1>
+            <h2>Keep track of the license plates you spot!</h2>
+        </header>
+        <main>
+            <div id="signInForm">
+                <h3>Sign in</h3>
+                <form>
+                    <div class="inputField">
+                        <label for="userName">User Name:</label>
+                        <input type="text" id="userName">
+                    </div>
+                    
+                    <div class="inputField">
+                        <label for="password">Password:</label>
+                        <input type="text" id="password">
+                    </div>
+                    <button type="submit">Sign In</button>
+                </form>
+            </div>
+
+            <div id="noAccount">
+                <p>Dont have an account?</p>
+                <button id="signUpBtn">Sign Up</button>
+            </div>
+
+            <div id="hidden">
+                <div id="content">
+                    <h3>Create an account</h3>
+                    <form id="signUpForm">
+                        <div class="inputField">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email">
+                        </div>
+                        
+                        <div class="inputField">
+                            <label for="createUserName">User Name:</label>
+                            <input type="text" id="createUserName">
+                        </div>
+
+                        <div class="inputField">
+                            <label for="firstName">First name:</label>
+                            <input type="text" id="firstName">
+                        </div>
+
+                        <div class="inputField">
+                            <label for="lastName">Last name:</label>
+                            <input type="text" id="lastName">
+                        </div>
+
+                        <div class="inputField">
+                            <label for="createPassword">Password:</label>
+                            <input type="password" id="createPassword">
+                        </div>
+
+                        <div class="inputField">
+                            <label for="confirmPassword">Confirm password:</label>
+                            <input type="password" id="confirmPassword">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+       
+        <script>
+            var signUpForm = document.getElementById("hidden")
+            var signUpBtn = document.getElementById("signUpBtn")
+
+            signUpBtn.onclick = function() {
+                signUpForm.style.display = "block"
+            }
+
+            window.onclick = function(event) {
+                if (event.target == hidden) {
+                    signUpForm.style.display = "none"
+                }
+            }
+
+        </script>
+    </body>
+</html>
