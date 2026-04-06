@@ -27,9 +27,14 @@ public class UserService {
     private final JwtUtils jwtUtils;
 
     public ServiceResponse addUser(AddUserDTO userInfo) {
-        boolean exists = userRepository.existsByUserName(userInfo.userName());
-        if (exists) {
+        boolean userNameExists = userRepository.existsByUserName(userInfo.userName());
+        if (userNameExists) {
             return new ServiceResponse(Map.of("Message", "User name already exists"), HttpStatus.CONFLICT);
+        }
+
+        boolean emailExists =  userRepository.existsByEmail(userInfo.email());
+        if (emailExists) {
+            return new ServiceResponse(Map.of("Message", "Email already exists"), HttpStatus.CONFLICT);
         }
 
         //hash the password so it is not stored in plain text
