@@ -51,12 +51,12 @@ public class UserService {
 
     public ServiceResponse login(LoginDTO info) {
         // Ensure username and password are present
-        if (info.userName().isEmpty() || info.password().isEmpty()) {
+        if (info.email().isEmpty() || info.password().isEmpty()) {
             return new ServiceResponse(Map.of("Message", "Username or password missing"), HttpStatus.UNPROCESSABLE_CONTENT);
         }
 
         // Retrieve the user by the userName, may be null
-        Optional<User> optionalUser = userRepository.findByUserName(info.userName());
+        Optional<User> optionalUser = userRepository.findByEmail(info.email());
         // check to make sure the user exists in the database with their username
         if (optionalUser.isEmpty()) {
             return new ServiceResponse(Map.of("Message", "Invalid Credentials"), HttpStatus.UNAUTHORIZED);
