@@ -1,4 +1,7 @@
 body {
+    padding-top: 5vh;
+    text-align: center;
+
     #hidden {
         display: none;
         position: fixed;
@@ -13,11 +16,58 @@ body {
     }
     
     #content {
-        background-color: aqua;
+        background-color: lightslategray;
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 10px;
+        min-width: fit-content;
+    }
+
+    #content h3 {
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+        
+        text-align: center;
+
     }
 
     #content .inputField{
         display: block;
-        background-color: beige;
     }
+
+    #signInForm {
+        display: grid;
+        grid-template-rows: max-content 1fr;
+        gap: 1vw;
+    }
+
+    #signUpForm {
+        display: grid;
+        gap: .5vw;
+    }
+
+    #signInForm button {
+        width: 15%;
+        margin: 0 auto 0 auto;
+        height: 3vw;
+    }
+
+    #signUpForm button {
+        width: 30%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #noAccount p {
+        font-size: large;
+    }
+
+    #noAccount button {
+        width: 15%;
+        height: 3vw;
+    }
+
+
 }

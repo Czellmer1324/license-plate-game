@@ -13,17 +13,17 @@
             <h2>Keep track of the license plates you spot!</h2>
         </header>
         <main>
-            <div id="signInForm">
-                <h3>Sign in</h3>
-                <form>
+            <div id="signInDiv">
+                <h3>Sign In</h3>
+                <form id="signInForm">
                     <div class="inputField">
-                        <label for="userName">User Name:</label>
-                        <input type="text" id="userName">
+                        <label for="email">Email:</label>
+                        <input type="text" id="email">
                     </div>
-                    
+
                     <div class="inputField">
                         <label for="password">Password:</label>
-                        <input type="text" id="password">
+                        <input type="password" id="password">
                     </div>
                     <button type="submit">Sign In</button>
                 </form>
@@ -39,8 +39,8 @@
                     <h3>Create an account</h3>
                     <form id="signUpForm">
                         <div class="inputField">
-                            <label for="email">Email:</label>
-                            <input type="email" id="email">
+                            <label for="createEmail">Email:</label>
+                            <input type="email" id="createEmail">
                         </div>
                         
                         <div class="inputField">
@@ -67,23 +67,101 @@
                             <label for="confirmPassword">Confirm password:</label>
                             <input type="password" id="confirmPassword">
                         </div>
+                        <button type="submit">Create Account</button>
                     </form>
                 </div>
             </div>
         </main>
        
         <script>
-            var signUpForm = document.getElementById("hidden")
-            var signUpBtn = document.getElementById("signUpBtn")
+            const hiddenForm = document.getElementById("hidden")
+            const signUpBtn = document.getElementById("signUpBtn")
+            const signInForm = document.getElementById("signInForm")
+            const signUpForm = document.getElementById("signUpForm")
 
             signUpBtn.onclick = function() {
-                signUpForm.style.display = "block"
+                hiddenForm.style.display = "block"
             }
 
             window.onclick = function(event) {
                 if (event.target == hidden) {
-                    signUpForm.style.display = "none"
+                    hiddenForm.style.display = "none"
                 }
+            }
+
+            signInForm.onsubmit  = function(event) {
+                event.preventDefault()
+            }
+
+            signUpForm.onsubmit = function(event) {
+                event.preventDefault()
+                createAccount()
+            }
+
+            async function createAccount() {
+                const email = document.getElementById("createEmail").value;
+                const userName = document.getElementById("createUserName").value;
+                const firstName = document.getElementById("firstName").value;
+                const lastName = document.getElementById("lastName").value;
+                const password = document.getElementById("createPassword").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+
+                // Need to validate the email and password
+                if (password != confirmPassword) {
+                    alert("Your passwords do not match!");
+                    return;
+                }
+
+                if (validate_email(email) == false) {
+                    alert("Improper email format.");
+                    return;
+                }
+
+                if (validate_password == false) {
+                    alert("Password does not meet the requirements.");
+                    return;
+                }
+
+                var obj = {
+                    "userName": userName,
+                    "firstName": firstName,
+                    "lastName": lastName,
+                    "email": email,
+                    "password": password
+                };
+
+                try {
+                    const response = await fetch("http://localhost:8080/user/create", {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(obj)
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                    } else {
+                        console.error('Request failed with status: ' + response.status)
+                    }
+                } catch (error) {
+                    console.error("Caught error:", error.message);
+                }
+                
+            }
+
+            function validate_password(password) {
+                const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+                if (regex.test(password) == false) {
+                    console.log("password invalid");
+                }
+                return regex.test(password)
+            }
+
+            function validate_email(email) {
+                const regex = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/
+                if (regex.test(email) == false) {
+                    console.log("email invalid")
+                }
+                return regex.test(email)
             }
 
         </script>
