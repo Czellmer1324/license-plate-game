@@ -2,6 +2,7 @@ const hiddenForm = document.getElementById("hidden");
 const signUpBtn = document.getElementById("signUpBtn");
 const signInForm = document.getElementById("signInForm");
 const signUpForm = document.getElementById("signUpForm");
+const url = "http://localhost:8080/user";
 
 signUpBtn.onclick = function() {
     hiddenForm.style.display = "block";
@@ -24,8 +25,13 @@ signUpForm.onsubmit = function(event) {
 }
 
 async function signIn() {
-    const email = document.getElementById("email");
-    const password = document.getElementById("password");
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (email == "" || password == "") {
+        alert("All fields must be filled out!");
+        return;
+    }
 
     var obj = {
         "email" : email,
@@ -40,9 +46,20 @@ async function signIn() {
         });
 
         if (response.ok) {
+            // save the returned jwt
+            // send them to the game page
+            const data = await response.json();
+            const key = data["Token"];
 
+            localStorage.setItem("jwt", key);
+            // need to get user data and store it, then move to next page
+            await getUserInfo();
+            window.location.replace("game.html")
         } else {
-
+            const data = await response.json();
+            if (response.status == 401) {
+                alert(data["Message"]);
+            }
         }
 
     } catch (error) {
@@ -50,6 +67,22 @@ async function signIn() {
     }
 
 
+}
+
+async function getUserInfo() {
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {'Authorization': "Bearer " + localStorage.getItem("jwt")}
+        })
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem("userInfo", JSON.stringify(data));
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
 }
 
 async function createAccount() {

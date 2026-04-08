@@ -52,6 +52,8 @@ body {
         width: 15%;
         margin: 0 auto 0 auto;
         height: 3vw;
+        min-width: 60px;
+        min-height: 20px;
     }
 
     #signUpForm button {
@@ -65,8 +67,10 @@ body {
     }
 
     #noAccount button {
+        min-width: 65px;
         width: 15%;
-        height: 3vw;
+        height: 3vh;
+        min-height: 20px;
     }
 
 

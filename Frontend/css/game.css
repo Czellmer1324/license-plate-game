@@ -1,0 +1,83 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.header h1 {
+    font-size: clamp(1rem, 4vw, 3rem);
+    text-align: center;
+}
+
+svg {
+	color: white;
+	display: block;
+	margin: 0 auto;
+	max-width: 1000px;
+    width: 100%;
+    height: auto;
+}
+
+path {
+	fill: currentColor;
+	stroke: #000;
+	stroke-width: 1;
+}
+
+.mapFound {
+    fill: green;
+}
+
+#stateSearch {
+    width: 100%;
+    padding: 2%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 0 auto;
+}
+
+.search-container {
+    font-family: Arial, sans-serif;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+#stateList .stateButton {
+    padding: 8px;
+    background-color: white;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    border-bottom: 1px solid #eee;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    font-size: clamp(.5rem, 4vw, 1rem);
+}
+
+#stateList .notFound {
+    background-color: white;
+}
+
+#stateList .found {
+    background-color: green;
+}
+
+#stateList .found:hover {
+    background-color: red;
+    cursor: pointer;
+}
+
+#stateList .notFound:hover {
+    background-color: lightblue;
+    cursor: pointer;
+}
+
+#stateList .hidden {
+    display: none;
+}
+
+#stateList {
+    list-style-type: none;
+    padding-left: 0;
+    height: 200px;
+    overflow-y: auto;
+}
