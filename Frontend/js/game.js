@@ -63,6 +63,7 @@ function replaceUserName() {
     const old = document.getElementById("replaceWithUser");
     const newEl = document.createElement("p");
     newEl.textContent = "Hello, " + JSON.parse(localStorage.getItem("userInfo"))["User Name"] + "!";
+    newEl.id = "displayUserName";
     old.replaceWith(newEl);
 }
 

@@ -7,6 +7,20 @@ body {
     text-align: center;
 }
 
+.header #displayUserName {
+    text-align: center;
+    font-size: clamp(.75rem, 2vw, 1.5rem);
+}
+
+.header #stateCountDiv {
+    text-align: center;
+}
+
+#stateCountDiv p {
+    display: inline;
+    font-size: clamp(.75rem, 2vw, 1.5rem);
+}
+
 svg {
 	color: white;
 	display: block;
@@ -78,6 +92,6 @@ path {
 #stateList {
     list-style-type: none;
     padding-left: 0;
-    height: 200px;
+    height: 150px;
     overflow-y: auto;
 }
