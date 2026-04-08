@@ -1,4 +1,5 @@
 const hiddenForm = document.getElementById("hidden");
+const signInDiv = document.getElementById("signInDiv");
 const signUpBtn = document.getElementById("signUpBtn");
 const signInForm = document.getElementById("signInForm");
 const signUpForm = document.getElementById("signUpForm");
@@ -8,11 +9,13 @@ signUpBtn.onclick = function() {
     hiddenForm.style.display = "block";
 }
 
-window.onclick = function(event) {
-    if (event.target == hidden) {
-        hiddenForm.style.display = "none";
-    }
-}
+document.getElementById("bottomSign").addEventListener('click', function() {
+    hiddenForm.style.display = "none";
+})
+
+document.getElementById("topBackSign").addEventListener('click', function() {
+    hiddenForm.style.display = "none";
+})
 
 signInForm.onsubmit  = function(event) {
     event.preventDefault();
@@ -107,13 +110,6 @@ async function createAccount() {
         return;
     }
 
-    if (validate_password(password) == false) {
-        alert("Password does not meet the requirements.");
-        document.getElementById("createPassword").value = "";
-        document.getElementById("confirmPassword").value = "";
-        return;
-    }
-
     var obj = {
         "userName": userName,
         "firstName": firstName,
@@ -163,14 +159,6 @@ async function createAccount() {
         console.error("Caught error:", error.message);
     }
     
-}
-
-function validate_password(password) {
-    const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-    if (regex.test(password) == false) {
-        console.log("password invalid");
-    }
-    return regex.test(password)
 }
 
 function validate_email(email) {
