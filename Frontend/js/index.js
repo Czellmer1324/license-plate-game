@@ -28,7 +28,7 @@ signUpForm.onsubmit = function(event) {
 }
 
 async function signIn() {
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.toLowerCase();
     const password = document.getElementById("password").value;
 
     if (email == "" || password == "") {
@@ -89,7 +89,7 @@ async function getUserInfo() {
 }
 
 async function createAccount() {
-    const email = document.getElementById("createEmail").value;
+    const email = document.getElementById("createEmail").value.toLowerCase();
     const userName = document.getElementById("createUserName").value;
     const firstName = document.getElementById("firstName").value;
     const lastName = document.getElementById("lastName").value;
