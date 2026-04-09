@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Value("${frontend_url}")
+    @Value("${frontend.url}")
     private String frontendUrl;
 
     @Bean
