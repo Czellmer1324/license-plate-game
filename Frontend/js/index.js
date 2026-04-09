@@ -3,7 +3,7 @@ const signInDiv = document.getElementById("signInDiv");
 const signUpBtn = document.getElementById("signUpBtn");
 const signInForm = document.getElementById("signInForm");
 const signUpForm = document.getElementById("signUpForm");
-const url = "http://localhost:8080/user";
+const url = "https://license-plate-game-backend.onrender.com/user";
 
 signUpBtn.onclick = function() {
     hiddenForm.style.display = "block";
