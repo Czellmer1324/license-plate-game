@@ -30,7 +30,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+        if ("OPTIONS".equals(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         try {
+
             // get the token from the header
             String token = utils.getTokenFromHeader(request);
 
