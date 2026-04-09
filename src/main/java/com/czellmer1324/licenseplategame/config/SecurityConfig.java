@@ -42,13 +42,10 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Value("${frontend.url}")
-    private String frontendUrl;
-
     @Bean
     UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration  configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(frontendUrl));
+        configuration.setAllowedOrigins(Arrays.asList("https://license-plate-game.onrender.com"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "UPDATE"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
