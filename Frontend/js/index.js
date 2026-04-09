@@ -42,7 +42,7 @@ async function signIn() {
     }
 
     try {
-        const response = await fetch(url + "/user/login", {
+        const response = await fetch(url + "/login", {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(obj)
@@ -119,7 +119,7 @@ async function createAccount() {
     };
 
     try {
-        const response = await fetch(url + "/user/create", {
+        const response = await fetch(url + "/create", {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(obj)
