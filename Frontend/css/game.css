@@ -37,7 +37,7 @@ path {
 }
 
 .mapFound {
-    fill: green;
+    fill: purple;
 }
 
 #stateSearch {
@@ -72,7 +72,7 @@ path {
 }
 
 #stateList .found {
-    background-color: green;
+    background-color: purple;
 }
 
 #stateList .found:hover {

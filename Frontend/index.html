@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>License Plate Game</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="./css/index.css">
+    </head>
+    <body>
+        <main>
+            <div class="mainContent">
+                <div id="signInDiv">
+                    <h1>License Plate Game</h1>
+                    <p>Keep track of the license plates you spot!</p>
+                    <hr>
+                    <h3>Welcome back!</h3>
+                    <p id="pMoreBelow">Sign in to continue tracking</p>
+                    <form id="signInForm">
+                        <div class="inputField">
+                            <label for="email">Email</label>
+                            <input type="text" id="email" placeholder="&#128231; Enter your email">
+                        </div>
+
+                        <div class="inputField">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" placeholder="&#128274; Enter your password">
+                        </div>
+                        <button type="submit" id="signInBtn">Sign In</button>
+                    </form>
+
+                    <div class="divider"><p>or</p></div>
+
+                    <div id="noAccount">
+                        <p>Dont have an account?</p>
+                        <button id="signUpBtn">Sign Up</button>
+                    </div>
+
+                    <div id="hidden">
+                        <a class="backToSign" href="#" id="topBackSign">&larr; Back to sign in</a>
+                        <h4>Create an account</h3>
+                        <p>Let's get you started!</p>
+                        <hr>
+                        <form id="signUpForm">
+                            <div class="inputField">
+                                <label for="createEmail">Email</label>
+                                <input type="email" id="createEmail" placeholder="&#128231; Enter your email">
+                            </div>
+                            
+                            <div class="inputField">
+                                <label for="createUserName">User Name</label>
+                                <input type="text" id="createUserName" placeholder="&#128100; Chose a username">
+                            </div>
+
+                            <div class="inputField">
+                                <label for="firstName">First name</label>
+                                <input type="text" id="firstName" placeholder="&#128100; Enter your first name">
+                            </div>
+
+                            <div class="inputField">
+                                <label for="lastName">Last name</label>
+                                <input type="text" id="lastName" placeholder="&#128100; Enter your last name">
+                            </div>
+
+                            <div class="inputField">
+                                <label for="createPassword">Password</label>
+                                <input type="password" id="createPassword" placeholder="&#128274; Create a password">
+                            </div>
+
+                            <div class="inputField">
+                                <label for="confirmPassword">Confirm password</label>
+                                <input type="password" id="confirmPassword" placeholder="&#128274; Confirm your password">
+                            </div>
+                            <button type="submit">Create Account</button>
+                        </form>
+                        <p id="hiddenAlreadyAccount">Already have an account?</p>
+                        <a class="backToSign" id="bottomSign" href="#">Sign in</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+       
+        <script src="./js/index.js"></script>
+    </body>
+</html>

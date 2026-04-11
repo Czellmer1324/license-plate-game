@@ -3,7 +3,7 @@ const signInDiv = document.getElementById("signInDiv");
 const signUpBtn = document.getElementById("signUpBtn");
 const signInForm = document.getElementById("signInForm");
 const signUpForm = document.getElementById("signUpForm");
-const url = "http://localhost:8080/user";
+const url = "https://license-plate-game-backend.onrender.com/user";
 
 signUpBtn.onclick = function() {
     hiddenForm.style.display = "block";
@@ -28,7 +28,7 @@ signUpForm.onsubmit = function(event) {
 }
 
 async function signIn() {
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.toLowerCase();
     const password = document.getElementById("password").value;
 
     if (email == "" || password == "") {
@@ -42,7 +42,7 @@ async function signIn() {
     }
 
     try {
-        const response = await fetch("http://localhost:8080/user/login", {
+        const response = await fetch(url + "/login", {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(obj)
@@ -89,7 +89,7 @@ async function getUserInfo() {
 }
 
 async function createAccount() {
-    const email = document.getElementById("createEmail").value;
+    const email = document.getElementById("createEmail").value.toLowerCase();
     const userName = document.getElementById("createUserName").value;
     const firstName = document.getElementById("firstName").value;
     const lastName = document.getElementById("lastName").value;
@@ -119,7 +119,7 @@ async function createAccount() {
     };
 
     try {
-        const response = await fetch("http://localhost:8080/user/create", {
+        const response = await fetch(url + "/create", {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(obj)
