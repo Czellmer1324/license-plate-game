@@ -38,4 +38,29 @@ public class GroupService {
         }
 
     }
+
+    public ServiceResponse deleteGroup() {
+        Optional<Integer> opId = util.getUserIDFromAuth();
+
+        if (opId.isEmpty()) {
+            return new ServiceResponse(Map.of("Message", "User is not authenticated"), HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = opId.get();
+
+        Optional<Group> opGroup = groupRepository.findByGroupOwnerUserId(userId);
+
+        if (opGroup.isEmpty()) {
+            return new ServiceResponse(Map.of("Message", "This user does not own a group"), HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            groupRepository.delete(opGroup.get());
+            return new ServiceResponse(Map.of("Message", "Group delete successfully"), HttpStatus.OK);
+        } catch (Exception e) {
+            IO.println(e.getMessage());
+            IO.println(opGroup.get().getGroupId());
+            return new ServiceResponse(Map.of("Message", "Something went wrong, try again"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

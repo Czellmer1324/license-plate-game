@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,7 +23,7 @@ public class Group {
     private String groupName;
 
     @ManyToMany
-    private ArrayList<User> members;
+    private List<User> members;
 
     @OneToOne
     @JoinColumn(referencedColumnName = "user_id", nullable = false)
