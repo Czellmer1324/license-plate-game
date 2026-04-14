@@ -84,4 +84,8 @@ public class UserService {
             return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
         }
     }
+
+    protected Optional<User> getUserByUserName(String userName) {
+        return userRepository.findByUserName(userName);
+    }
 }

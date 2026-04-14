@@ -1,6 +1,7 @@
 package com.czellmer1324.licenseplategame.controller;
 
 import com.czellmer1324.licenseplategame.dto.CreateGroupDTO;
+import com.czellmer1324.licenseplategame.dto.InviteDTO;
 import com.czellmer1324.licenseplategame.dto.ServiceResponse;
 import com.czellmer1324.licenseplategame.services.GroupService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,12 @@ public class GroupController {
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteGroup() {
         ServiceResponse responseInfo = service.deleteGroup();
+        return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
+    }
+
+    @PutMapping("/invite/{groupId}")
+    public ResponseEntity<?> inviteToGroup(@PathVariable long groupId, @RequestBody InviteDTO inviteDTO) {
+        ServiceResponse responseInfo = service.inviteUserToGroup(groupId, inviteDTO);
         return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
     }
 }
