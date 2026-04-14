@@ -67,6 +67,17 @@ public class GameService {
 
     }
 
+    public ServiceResponse unmarkAll() {
+        Optional<Integer> opId = getUserIDFromAuth();
+
+        if (opId.isEmpty()) {
+            return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        }
+
+        gameRepository.deleteAllByUserUserId(opId.get());
+        return new ServiceResponse(Map.of("Message", "States unmarked successfully"), HttpStatus.OK);
+    }
+
     private Optional<Integer> getUserIDFromAuth() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 

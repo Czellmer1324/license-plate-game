@@ -33,4 +33,10 @@ public class GameController {
         ServiceResponse info = service.getMarkedStates();
         return ResponseEntity.status(info.code()).body(info.response());
     }
+
+    @DeleteMapping("/unmark-all")
+    public ResponseEntity<?> unmarkAll() {
+        ServiceResponse info = service.unmarkAll();
+        return ResponseEntity.status(info.code()).body(info.response());
+    }
 }

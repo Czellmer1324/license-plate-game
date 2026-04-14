@@ -1,4 +1,4 @@
-const url = "https://license-plate-game-backend.onrender.com/user";
+const url = "localhost:8080/game";
 const found = new Map;
 const states = new Map([
     ["Arizona", 'AZ'],
