@@ -21,9 +21,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final SpottedStateRepository spottedRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final EntityManager manager;
     private final JwtUtils jwtUtils;
 
     public ServiceResponse addUser(AddUserDTO userInfo) {
@@ -92,68 +90,6 @@ public class UserService {
             }
         } else {
             return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
-        }
-    }
-
-    public ServiceResponse markState(SpotStateDTO info) {
-        Optional<Integer> opId = getUserIDFromAuth();
-
-        if (opId.isEmpty()) {
-            return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
-        }
-
-        if (info.stateCode().length() != 2) {
-            return new ServiceResponse(Map.of("Message", "Improper state code"), HttpStatus.BAD_REQUEST);
-        }
-
-        // Make sure the state is not already marked
-        if (spottedRepository.existsByUserUserIdAndStateCode(opId.get(), info.stateCode())) {
-            return new ServiceResponse(Map.of("Message", "State is already marked"), HttpStatus.ALREADY_REPORTED);
-        }
-
-        SpottedStates newSpot = spottedRepository.save(new SpottedStates(manager.getReference(User.class, opId.get()), info.stateCode()));
-        return new ServiceResponse(Map.of( "spottedId", newSpot.getSpottedId(), "stateCode", newSpot.getStateCode()), HttpStatus.CREATED);
-    }
-
-    public ServiceResponse unmarkState(Long id) {
-        Optional<Integer> opId = getUserIDFromAuth();
-
-        if (opId.isEmpty()) {
-            return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
-        }
-
-        if (!spottedRepository.existsByUserUserIdAndSpottedId(opId.get(), id)) {
-            return new ServiceResponse(Map.of("Message", "State not spotted for this user"), HttpStatus.NOT_FOUND);
-        }
-
-       spottedRepository.deleteById(id);
-        return new ServiceResponse(Map.of("Message", "Unmarked successfully"), HttpStatus.OK);
-    }
-
-    public ServiceResponse getMarkedStates() {
-        Optional<Integer> opId = getUserIDFromAuth();
-
-        if (opId.isEmpty()) {
-            return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
-        }
-
-        return new ServiceResponse(spottedRepository.findAllByUserUserId(opId.get()), HttpStatus.OK);
-
-    }
-
-    private Optional<Integer> getUserIDFromAuth() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth != null && auth.isAuthenticated()) {
-            Object principal = auth.getPrincipal();
-
-            if (principal instanceof User) {
-                return Optional.of(((User) principal).getUserId());
-            } else {
-                return Optional.empty();
-            }
-        } else {
-            return Optional.empty();
         }
     }
 }
