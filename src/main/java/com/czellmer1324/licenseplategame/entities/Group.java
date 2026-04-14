@@ -2,6 +2,7 @@ package com.czellmer1324.licenseplategame.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
@@ -10,7 +11,8 @@ import java.util.ArrayList;
 @Entity
 @Getter
 @Setter
-@Table(name="Group", schema = "public")
+@Table(name="groups", schema = "public")
+@NoArgsConstructor
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +31,10 @@ public class Group {
 
     @Column(name = "end_date")
     private ZonedDateTime endDate;
+
+    public Group(String groupName, User groupOwner, ZonedDateTime endDate) {
+        this.groupName = groupName;
+        this.groupOwner = groupOwner;
+        this.endDate = endDate;
+    }
 }

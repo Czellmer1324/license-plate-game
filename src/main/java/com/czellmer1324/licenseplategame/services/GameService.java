@@ -8,8 +8,6 @@ import com.czellmer1324.licenseplategame.repository.SpottedStateRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -20,9 +18,10 @@ import java.util.Optional;
 public class GameService {
     private final SpottedStateRepository gameRepository;
     private final EntityManager manager;
+    private final Utils util;
 
     public ServiceResponse markState(SpotStateDTO info) {
-        Optional<Integer> opId = getUserIDFromAuth();
+        Optional<Integer> opId = util.getUserIDFromAuth();
 
         if (opId.isEmpty()) {
             return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
@@ -42,7 +41,7 @@ public class GameService {
     }
 
     public ServiceResponse unmarkState(Long id) {
-        Optional<Integer> opId = getUserIDFromAuth();
+        Optional<Integer> opId = util.getUserIDFromAuth();
 
         if (opId.isEmpty()) {
             return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
@@ -57,7 +56,7 @@ public class GameService {
     }
 
     public ServiceResponse getMarkedStates() {
-        Optional<Integer> opId = getUserIDFromAuth();
+        Optional<Integer> opId = util.getUserIDFromAuth();
 
         if (opId.isEmpty()) {
             return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
@@ -68,7 +67,7 @@ public class GameService {
     }
 
     public ServiceResponse unmarkAll() {
-        Optional<Integer> opId = getUserIDFromAuth();
+        Optional<Integer> opId = util.getUserIDFromAuth();
 
         if (opId.isEmpty()) {
             return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
@@ -76,21 +75,5 @@ public class GameService {
 
         gameRepository.deleteAllByUserUserId(opId.get());
         return new ServiceResponse(Map.of("Message", "States unmarked successfully"), HttpStatus.OK);
-    }
-
-    private Optional<Integer> getUserIDFromAuth() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth != null && auth.isAuthenticated()) {
-            Object principal = auth.getPrincipal();
-
-            if (principal instanceof User) {
-                return Optional.of(((User) principal).getUserId());
-            } else {
-                return Optional.empty();
-            }
-        } else {
-            return Optional.empty();
-        }
     }
 }
