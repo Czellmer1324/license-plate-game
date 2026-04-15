@@ -31,4 +31,10 @@ public class GroupController {
         ServiceResponse responseInfo = service.inviteUserToGroup(groupId, inviteDTO);
         return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
     }
+
+    @GetMapping("/get-groups")
+    public ResponseEntity<?> getUserGroups() {
+        ServiceResponse responseInfo = service.getUserGroups();
+        return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
+    }
 }

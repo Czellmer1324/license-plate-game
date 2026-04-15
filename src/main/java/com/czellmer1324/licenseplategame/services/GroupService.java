@@ -1,10 +1,10 @@
 package com.czellmer1324.licenseplategame.services;
 
 import com.czellmer1324.licenseplategame.dto.CreateGroupDTO;
+import com.czellmer1324.licenseplategame.dto.GetGroupsDTO;
 import com.czellmer1324.licenseplategame.dto.InviteDTO;
 import com.czellmer1324.licenseplategame.dto.ServiceResponse;
 import com.czellmer1324.licenseplategame.entities.Group;
-import com.czellmer1324.licenseplategame.entities.Invite;
 import com.czellmer1324.licenseplategame.entities.User;
 import com.czellmer1324.licenseplategame.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
@@ -101,5 +101,12 @@ public class GroupService {
         // send info to invite service
         inviteService.createInvite(group, opInvitee.get());
         return new ServiceResponse(Map.of("Message", "User was invited"), HttpStatus.OK);
+    }
+
+    public ServiceResponse getUserGroups() {
+        Optional<Integer> opId = util.getUserIDFromAuth();
+        if (opId.isEmpty()) return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        List<GetGroupsDTO> groups = groupRepository.findAllByMembersUserId(opId.get());
+        return new ServiceResponse(groups, HttpStatus.OK);
     }
 }
