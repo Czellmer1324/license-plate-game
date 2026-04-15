@@ -1,6 +1,7 @@
 package com.czellmer1324.licenseplategame.services;
 
 import com.czellmer1324.licenseplategame.dto.*;
+import com.czellmer1324.licenseplategame.entities.Invite;
 import com.czellmer1324.licenseplategame.jwt.JwtUtils;
 import com.czellmer1324.licenseplategame.repository.UserRepository;
 import com.czellmer1324.licenseplategame.entities.User;
@@ -19,6 +20,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final Utils utils;
+    private final InviteService inviteService;
 
     public ServiceResponse addUser(AddUserDTO userInfo) {
         boolean userNameExists = userRepository.existsByUserName(userInfo.userName());
@@ -83,6 +85,13 @@ public class UserService {
         } else {
             return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    public ServiceResponse acceptInvite(AcceptInviteDTO info) {
+        // get the user
+        Optional<User> opUser = utils.getUserFromAuth();
+        if (opUser.isEmpty()) return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        return inviteService.acceptInvite(opUser.get(), info.inviteId());
     }
 
     protected Optional<User> getUserByUserName(String userName) {

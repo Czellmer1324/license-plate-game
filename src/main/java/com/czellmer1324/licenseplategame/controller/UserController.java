@@ -31,4 +31,10 @@ public class UserController {
         ServiceResponse info = service.getUserInfo();
         return ResponseEntity.status(info.code()).body(info.response());
     }
+
+    @PostMapping("/accept-invite")
+    public ResponseEntity<?> acceptInvite(@RequestBody AcceptInviteDTO requestBody) {
+        ServiceResponse info = service.acceptInvite(requestBody);
+        return ResponseEntity.status(info.code()).body(info.response());
+    }
 }

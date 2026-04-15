@@ -25,7 +25,7 @@ public class User {
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
-    @ManyToMany
+    @ManyToMany(mappedBy = "members")
     private List<Group> groups;
 
     public User(String userName, String firstName, String lastName, String email, String password) {

@@ -79,19 +79,23 @@ public class GroupService {
         // make sure the sending user owns the group
         // make sure the group exists
         Optional<Group> opGroup = groupRepository.findById(groupId);
-        if (opGroup.isEmpty()) return new ServiceResponse(Map.of("Message", "This group does not exist"), HttpStatus.BAD_REQUEST);
+        if (opGroup.isEmpty())
+            return new ServiceResponse(Map.of("Message", "This group does not exist"), HttpStatus.BAD_REQUEST);
         if (opGroup.get().getGroupOwner().getUserId() != groupOwner.getUserId()) {
             return new ServiceResponse(Map.of("Message", "This user does not own this group"), HttpStatus.UNAUTHORIZED);
         }
         Group group = opGroup.get();
         // make sure the user they are trying to invite exists
         Optional<User> opInvitee = userService.getUserByUserName(inviteDTO.userName());
-        if (opInvitee.isEmpty()) return new ServiceResponse(Map.of("Message", "This user does not exist"), HttpStatus.BAD_REQUEST);
+        if (opInvitee.isEmpty())
+            return new ServiceResponse(Map.of("Message", "This user does not exist"), HttpStatus.BAD_REQUEST);
         // check to make sure the user is not already part of the group
-        if (group.getMembers().contains(opInvitee.get())) return new ServiceResponse(Map.of("Message", "User is already a part of this group"), HttpStatus.CONFLICT);
+        if (group.getMembers().contains(opInvitee.get()))
+            return new ServiceResponse(Map.of("Message", "User is already a part of this group"), HttpStatus.CONFLICT);
 
         //check to make sure the invite does not already
-        if (inviteService.checkIfInviteExists(group, opInvitee.get())) return new ServiceResponse(Map.of("Message", "This user has already been invited"), HttpStatus.CONFLICT);
+        if (inviteService.checkIfInviteExists(group, opInvitee.get()))
+            return new ServiceResponse(Map.of("Message", "This user has already been invited"), HttpStatus.CONFLICT);
         // send info to invite service
         inviteService.createInvite(group, opInvitee.get());
         return new ServiceResponse(Map.of("Message", "User was invited"), HttpStatus.OK);

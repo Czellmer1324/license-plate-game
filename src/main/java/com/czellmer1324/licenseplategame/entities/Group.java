@@ -23,6 +23,7 @@ public class Group {
     private String groupName;
 
     @ManyToMany
+    @JoinTable
     private List<User> members;
 
     @OneToOne
