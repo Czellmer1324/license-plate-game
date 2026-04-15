@@ -8,5 +8,5 @@ public interface SpottedStateRepository extends CrudRepository<SpottedStates, Lo
     Iterable<GetMarkedStatesDTO> findAllByUserUserId(int userId);
     Boolean existsByUserUserIdAndSpottedId(int userId, Long spottedId);
     Boolean existsByUserUserIdAndStateCode(int userId, String StateCode);
-    void deleteAllByUserUserId(int userId);
+    void deleteAllInBatchByUserUserId(int userId);
 }

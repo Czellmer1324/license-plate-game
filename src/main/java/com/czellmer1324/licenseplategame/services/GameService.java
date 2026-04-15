@@ -5,7 +5,9 @@ import com.czellmer1324.licenseplategame.dto.SpotStateDTO;
 import com.czellmer1324.licenseplategame.entities.SpottedStates;
 import com.czellmer1324.licenseplategame.entities.User;
 import com.czellmer1324.licenseplategame.repository.SpottedStateRepository;
+import com.czellmer1324.licenseplategame.repository.UserRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,41 +20,60 @@ import java.util.Optional;
 public class GameService {
     private final SpottedStateRepository gameRepository;
     private final EntityManager manager;
+    private final UserRepository userRepository;
     private final Utils util;
 
     public ServiceResponse markState(SpotStateDTO info) {
-        Optional<Integer> opId = util.getUserIDFromAuth();
+        Optional<User> opUser = util.getUserFromAuth();
 
-        if (opId.isEmpty()) {
-            return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        if (opUser.isEmpty()) {
+            return util.noAuthResponse();
         }
+
+        User user = opUser.get();
 
         if (info.stateCode().length() != 2) {
             return new ServiceResponse(Map.of("Message", "Improper state code"), HttpStatus.BAD_REQUEST);
         }
 
         // Make sure the state is not already marked
-        if (gameRepository.existsByUserUserIdAndStateCode(opId.get(), info.stateCode())) {
+        if (gameRepository.existsByUserUserIdAndStateCode(user.getUserId(), info.stateCode())) {
             return new ServiceResponse(Map.of("Message", "State is already marked"), HttpStatus.ALREADY_REPORTED);
         }
 
-        SpottedStates newSpot = gameRepository.save(new SpottedStates(manager.getReference(User.class, opId.get()), info.stateCode()));
-        return new ServiceResponse(Map.of( "spottedId", newSpot.getSpottedId(), "stateCode", newSpot.getStateCode()), HttpStatus.CREATED);
+        try {
+            SpottedStates newSpot = gameRepository.save(new SpottedStates(manager.getReference(User.class, user.getUserId()), info.stateCode()));
+            user.addFound();
+            userRepository.save(user);
+
+            return new ServiceResponse(Map.of( "spottedId", newSpot.getSpottedId(), "stateCode", newSpot.getStateCode()), HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ServiceResponse(Map.of("Message", "Something went wrong please try again"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public ServiceResponse unmarkState(Long id) {
-        Optional<Integer> opId = util.getUserIDFromAuth();
+        Optional<User> opUser = util.getUserFromAuth();
 
-        if (opId.isEmpty()) {
-            return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        if (opUser.isEmpty()) {
+            return util.noAuthResponse();
         }
 
-        if (!gameRepository.existsByUserUserIdAndSpottedId(opId.get(), id)) {
+        User user = opUser.get();
+
+        if (!gameRepository.existsByUserUserIdAndSpottedId(user.getUserId(), id)) {
             return new ServiceResponse(Map.of("Message", "State not spotted for this user"), HttpStatus.NOT_FOUND);
         }
 
-        gameRepository.deleteById(id);
-        return new ServiceResponse(Map.of("Message", "Unmarked successfully"), HttpStatus.OK);
+        try {
+            gameRepository.deleteById(id);
+            user.subtractFound();
+            userRepository.save(user);
+            return new ServiceResponse(Map.of("Message", "Unmarked successfully"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ServiceResponse(Map.of("Message", "Something went wrong please try again"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     public ServiceResponse getMarkedStates() {
@@ -66,14 +87,24 @@ public class GameService {
 
     }
 
+    @Transactional
     public ServiceResponse unmarkAll() {
-        Optional<Integer> opId = util.getUserIDFromAuth();
+        Optional<User> opUser = util.getUserFromAuth();
 
-        if (opId.isEmpty()) {
-            return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        if (opUser.isEmpty()) {
+            return util.noAuthResponse();
         }
 
-        gameRepository.deleteAllByUserUserId(opId.get());
-        return new ServiceResponse(Map.of("Message", "States unmarked successfully"), HttpStatus.OK);
+        User user = opUser.get();
+
+        try {
+            gameRepository.deleteAllInBatchByUserUserId(user.getUserId());
+            user.setNumFound(0);
+            userRepository.save(user);
+            return new ServiceResponse(Map.of("Message", "States unmarked successfully"), HttpStatus.OK);
+        } catch (Exception e) {
+            IO.println(e.getMessage());
+            return new ServiceResponse(Map.of("Message", "Something went wrong please try again"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

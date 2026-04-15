@@ -23,6 +23,8 @@ public class User {
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
+    @Column(name = "num_found", nullable = false)
+    private int numFound;
 
     public User(String userName, String firstName, String lastName, String email, String password) {
         this.userName = userName;
@@ -30,7 +32,16 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.numFound = 0;
     }
 
     public User() {}
+
+    public void addFound() {
+        numFound++;
+    }
+
+    public void subtractFound() {
+        numFound--;
+    }
 }
