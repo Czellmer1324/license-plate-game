@@ -117,7 +117,7 @@ public class GroupService {
         GetGroupDTO safeReturn = new GetGroupDTO(group.getGroupName(), new ArrayList<>(), group.getEndDate(), groupId);
 
         for (User member : members) {
-            safeReturn.members().add(new SafeUserDTO(member.getUserName(), member.getUserId()));
+            safeReturn.members().add(new SafeUserDTO(member.getUserName(), member.getUserId(), member.getNumFound()));
         }
 
         return new ServiceResponse(safeReturn, HttpStatus.OK);
