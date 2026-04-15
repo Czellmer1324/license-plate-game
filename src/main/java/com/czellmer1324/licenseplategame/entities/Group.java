@@ -32,9 +32,10 @@ public class Group {
     @Column(name = "end_date")
     private ZonedDateTime endDate;
 
-    public Group(String groupName, User groupOwner, ZonedDateTime endDate) {
+    public Group(String groupName, User groupOwner, List<User> members, ZonedDateTime endDate) {
         this.groupName = groupName;
         this.groupOwner = groupOwner;
+        this.members = members;
         this.endDate = endDate;
     }
 }

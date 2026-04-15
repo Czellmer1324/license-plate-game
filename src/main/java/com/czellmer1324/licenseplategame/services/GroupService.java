@@ -12,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,7 +34,8 @@ public class GroupService {
         User user = opUser.get();
 
         try {
-            groupRepository.save(new Group(groupDTO.groupName(), user, groupDTO.endDate()));
+            Group group = new Group(groupDTO.groupName(), user, List.of(user), groupDTO.endDate());
+            groupRepository.save(group);
             return new ServiceResponse(Map.of("Message", "Group created successfully"), HttpStatus.CREATED);
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             return new ServiceResponse(Map.of("Message", "User already owns a group"), HttpStatus.CONFLICT);
