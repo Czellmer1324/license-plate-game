@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -92,6 +93,17 @@ public class UserService {
         Optional<User> opUser = utils.getUserFromAuth();
         if (opUser.isEmpty()) return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
         return inviteService.acceptInvite(opUser.get(), info.inviteId());
+    }
+
+    public ServiceResponse getInvites() {
+        // get the user from auth
+        Optional<User> opUser = utils.getUserFromAuth();
+        if (opUser.isEmpty()) return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        User user = opUser.get();
+        // retrieve their invites
+        List<GetInviteDTO> invites = inviteService.getInvitesByUserId(user.getUserId());
+        // return the invites
+        return new ServiceResponse(invites, HttpStatus.OK);
     }
 
     protected Optional<User> getUserByUserName(String userName) {

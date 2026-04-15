@@ -37,4 +37,10 @@ public class UserController {
         ServiceResponse info = service.acceptInvite(requestBody);
         return ResponseEntity.status(info.code()).body(info.response());
     }
+
+    @GetMapping("/invites")
+    public ResponseEntity<?> getInvites() {
+        ServiceResponse info = service.getInvites();
+        return ResponseEntity.status(info.code()).body(info.response());
+    }
 }

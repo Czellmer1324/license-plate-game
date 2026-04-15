@@ -1,5 +1,6 @@
 package com.czellmer1324.licenseplategame.services;
 
+import com.czellmer1324.licenseplategame.dto.GetInviteDTO;
 import com.czellmer1324.licenseplategame.dto.ServiceResponse;
 import com.czellmer1324.licenseplategame.entities.Group;
 import com.czellmer1324.licenseplategame.entities.Invite;
@@ -52,5 +53,9 @@ public class InviteService {
         } catch (Exception e) {
             return new ServiceResponse(Map.of("Message", "Something went wrong, try again"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    protected List<GetInviteDTO> getInvitesByUserId(int userId) {
+        return repository.findAllByUserUserId(userId);
     }
 }

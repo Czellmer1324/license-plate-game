@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
 @Table(name="USERS", schema = "public")
 @Getter
@@ -25,8 +23,6 @@ public class User {
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
-    @ManyToMany(mappedBy = "members")
-    private List<Group> groups;
 
     public User(String userName, String firstName, String lastName, String email, String password) {
         this.userName = userName;
