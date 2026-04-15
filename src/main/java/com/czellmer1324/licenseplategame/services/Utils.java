@@ -1,11 +1,14 @@
 package com.czellmer1324.licenseplategame.services;
 
+import com.czellmer1324.licenseplategame.dto.ServiceResponse;
 import com.czellmer1324.licenseplategame.entities.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -41,5 +44,9 @@ public class Utils {
         } else {
             return Optional.empty();
         }
+    }
+
+    public ServiceResponse noAuthResponse() {
+        return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
     }
 }

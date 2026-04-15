@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface GroupRepository extends CrudRepository<Group, Long> {
     Optional<Group> findByGroupOwnerUserId(int ownerId);
     List<GetGroupsDTO> findAllByMembersUserId(int userId);
+    Optional<Group> findByGroupIdAndMembersUserId(long groupId, int userId);
 }

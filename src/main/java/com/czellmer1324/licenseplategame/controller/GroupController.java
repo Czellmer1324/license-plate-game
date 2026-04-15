@@ -37,4 +37,10 @@ public class GroupController {
         ServiceResponse responseInfo = service.getUserGroups();
         return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
     }
+
+    @GetMapping("/info/{groupId}")
+    public ResponseEntity<?> getGroupInfo(@PathVariable long groupId) {
+        ServiceResponse responseInfo = service.getGroupInfo(groupId);
+        return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
+    }
 }

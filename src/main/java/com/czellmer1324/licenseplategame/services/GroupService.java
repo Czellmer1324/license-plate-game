@@ -1,9 +1,6 @@
 package com.czellmer1324.licenseplategame.services;
 
-import com.czellmer1324.licenseplategame.dto.CreateGroupDTO;
-import com.czellmer1324.licenseplategame.dto.GetGroupsDTO;
-import com.czellmer1324.licenseplategame.dto.InviteDTO;
-import com.czellmer1324.licenseplategame.dto.ServiceResponse;
+import com.czellmer1324.licenseplategame.dto.*;
 import com.czellmer1324.licenseplategame.entities.Group;
 import com.czellmer1324.licenseplategame.entities.User;
 import com.czellmer1324.licenseplategame.repository.GroupRepository;
@@ -12,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,9 +25,7 @@ public class GroupService {
     public ServiceResponse createGroup(CreateGroupDTO groupDTO) {
         Optional<User> opUser = util.getUserFromAuth();
 
-        if (opUser.isEmpty()) {
-            return new ServiceResponse(Map.of("Message", "User is not authenticated"), HttpStatus.UNAUTHORIZED);
-        }
+        if (opUser.isEmpty()) return util.noAuthResponse();
 
         User user = opUser.get();
 
@@ -48,9 +44,7 @@ public class GroupService {
     public ServiceResponse deleteGroup() {
         Optional<Integer> opId = util.getUserIDFromAuth();
 
-        if (opId.isEmpty()) {
-            return new ServiceResponse(Map.of("Message", "User is not authenticated"), HttpStatus.UNAUTHORIZED);
-        }
+        if (opId.isEmpty()) return util.noAuthResponse();
 
         int userId = opId.get();
 
@@ -73,9 +67,7 @@ public class GroupService {
     public ServiceResponse inviteUserToGroup(long groupId, InviteDTO inviteDTO) {
         // make sure the sending user is authenticated
         Optional<User> opUser = util.getUserFromAuth();
-        if (opUser.isEmpty()) {
-            return new ServiceResponse(Map.of("Message", "User is not authenticated"), HttpStatus.UNAUTHORIZED);
-        }
+        if (opUser.isEmpty()) return util.noAuthResponse();
 
         User groupOwner = opUser.get();
         // make sure the sending user owns the group
@@ -105,8 +97,29 @@ public class GroupService {
 
     public ServiceResponse getUserGroups() {
         Optional<Integer> opId = util.getUserIDFromAuth();
-        if (opId.isEmpty()) return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        if (opId.isEmpty()) return util.noAuthResponse();
         List<GetGroupsDTO> groups = groupRepository.findAllByMembersUserId(opId.get());
         return new ServiceResponse(groups, HttpStatus.OK);
+    }
+
+    public ServiceResponse getGroupInfo(long groupId) {
+        // get the user that sent the request
+        Optional<User> opUser = util.getUserFromAuth();
+        if (opUser.isEmpty()) return util.noAuthResponse();
+        User user = opUser.get();
+        // get the group
+        Optional<Group> opGroup = groupRepository.findByGroupIdAndMembersUserId(groupId, user.getUserId());
+        if (opGroup.isEmpty()) return new ServiceResponse(Map.of("Message", "This group does not exist or not part of group"), HttpStatus.BAD_REQUEST);
+        Group group = opGroup.get();
+        List<User> members = group.getMembers();
+
+        // convert the group to DTO so that it protects users sensitive info
+        GetGroupDTO safeReturn = new GetGroupDTO(group.getGroupName(), new ArrayList<>(), group.getEndDate(), groupId);
+
+        for (User member : members) {
+            safeReturn.members().add(new SafeUserDTO(member.getUserName(), member.getUserId()));
+        }
+
+        return new ServiceResponse(safeReturn, HttpStatus.OK);
     }
 }
