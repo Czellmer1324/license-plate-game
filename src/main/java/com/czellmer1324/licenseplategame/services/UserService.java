@@ -1,19 +1,15 @@
 package com.czellmer1324.licenseplategame.services;
 
 import com.czellmer1324.licenseplategame.dto.*;
-import com.czellmer1324.licenseplategame.entities.SpottedStates;
 import com.czellmer1324.licenseplategame.jwt.JwtUtils;
-import com.czellmer1324.licenseplategame.repository.SpottedStateRepository;
 import com.czellmer1324.licenseplategame.repository.UserRepository;
 import com.czellmer1324.licenseplategame.entities.User;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,6 +19,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final Utils utils;
+    private final InviteService inviteService;
 
     public ServiceResponse addUser(AddUserDTO userInfo) {
         boolean userNameExists = userRepository.existsByUserName(userInfo.userName());
@@ -75,21 +73,46 @@ public class UserService {
     }
 
     public ServiceResponse getUserInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Optional<User> opUser = utils.getUserFromAuth();
 
-        if (auth != null && auth.isAuthenticated()) {
-            Object principal = auth.getPrincipal();
-            if (principal instanceof User user) {
-                Map<String, String> response = Map.of("User Name", user.getUserName(),
-                        "firstName", user.getFirstName(),
-                        "lastName", user.getLastName(),
-                        "email", user.getEmail());
-                return new ServiceResponse(response, HttpStatus.OK);
-            } else {
-                return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
-            }
+        if (opUser.isPresent()) {
+            User user = opUser.get();
+            Map<String, String> response = Map.of("User Name", user.getUserName(),
+                    "firstName", user.getFirstName(),
+                    "lastName", user.getLastName(),
+                    "email", user.getEmail());
+            return new ServiceResponse(response, HttpStatus.OK);
         } else {
             return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    public ServiceResponse acceptInvite(InviteResponseDTO info) {
+        // get the user
+        Optional<User> opUser = utils.getUserFromAuth();
+        if (opUser.isEmpty()) return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        return inviteService.acceptInvite(opUser.get(), info.inviteId());
+    }
+
+    public ServiceResponse getInvites() {
+        // get the user from auth
+        Optional<User> opUser = utils.getUserFromAuth();
+        if (opUser.isEmpty()) return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        User user = opUser.get();
+        // retrieve their invites
+        List<GetInviteDTO> invites = inviteService.getInvitesByUserId(user.getUserId());
+        // return the invites
+        return new ServiceResponse(invites, HttpStatus.OK);
+    }
+
+    public ServiceResponse declineInvite(long inviteId) {
+        // get the user
+        Optional<User> opUser = utils.getUserFromAuth();
+        if (opUser.isEmpty()) return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        return inviteService.declineInvite(opUser.get(), inviteId);
+    }
+
+    protected Optional<User> getUserByUserName(String userName) {
+        return userRepository.findByUserName(userName);
     }
 }
