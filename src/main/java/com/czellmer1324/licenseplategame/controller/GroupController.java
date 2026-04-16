@@ -58,4 +58,10 @@ public class GroupController {
         ServiceResponse responseInfo = service.removeUser(userName);
         return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
     }
+
+    @GetMapping("/member-map/{userId}/{groupId}")
+    public ResponseEntity<?> getMemberFoundStates(@PathVariable int userId, @PathVariable long groupId) {
+        ServiceResponse responseInfo = service.getMemberFoundStates(userId, groupId);
+        return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
+    }
 }

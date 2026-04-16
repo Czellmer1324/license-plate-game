@@ -22,6 +22,7 @@ public class GroupService {
     private final Utils util;
     private final UserService userService;
     private final InviteService inviteService;
+    private final GameService gameService;
 
     public ServiceResponse createGroup(CreateGroupDTO groupDTO) {
         Optional<User> opUser = util.getUserFromAuth();
@@ -59,8 +60,6 @@ public class GroupService {
             groupRepository.delete(opGroup.get());
             return new ServiceResponse(Map.of("Message", "Group delete successfully"), HttpStatus.OK);
         } catch (Exception e) {
-            IO.println(e.getMessage());
-            IO.println(opGroup.get().getGroupId());
             return new ServiceResponse(Map.of("Message", "Something went wrong, try again"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -168,5 +167,46 @@ public class GroupService {
         }
 
         return new ServiceResponse(Map.of("Message", "User is not part of this group"), HttpStatus.CONFLICT);
+    }
+
+    public ServiceResponse getMemberFoundStates(int userId, long groupId) {
+        Optional<Integer> opId = util.getUserIDFromAuth();
+        if (opId.isEmpty()) return util.noAuthResponse();
+        int requesterId = opId.get();
+
+        if (requesterId == userId) {
+            return new ServiceResponse(Map.of("Message", "User trying to view their own map"), HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            Optional<Group> opGroup = groupRepository.findById(groupId);
+            if (opGroup.isEmpty()) return new ServiceResponse(Map.of("Message", "This group does not exist"), HttpStatus.NOT_FOUND);
+            Group group = opGroup.get();
+            List<User> members = group.getMembers();
+            boolean requesterPartOf = false;
+            boolean targetPartOfGroup = false;
+
+            for (User user : members) {
+                if (user.getUserId() == requesterId) {
+                    requesterPartOf = true;
+                }
+
+                if (user.getUserId() == userId) {
+                    targetPartOfGroup = true;
+                }
+            }
+
+            if (!requesterPartOf) {
+                return new ServiceResponse(Map.of("Message", "Requester is not part of this group"), HttpStatus.CONFLICT);
+            }
+
+            if (!targetPartOfGroup) {
+                return new ServiceResponse(Map.of("Message", "Target user is not part of this group"), HttpStatus.NOT_FOUND);
+            }
+
+            return new ServiceResponse(gameService.getMarkedStatesById(userId), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ServiceResponse(Map.of("Message", "Something went wrong, try again"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

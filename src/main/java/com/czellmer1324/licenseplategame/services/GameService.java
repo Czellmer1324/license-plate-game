@@ -1,5 +1,6 @@
 package com.czellmer1324.licenseplategame.services;
 
+import com.czellmer1324.licenseplategame.dto.GetMarkedStatesDTO;
 import com.czellmer1324.licenseplategame.dto.ServiceResponse;
 import com.czellmer1324.licenseplategame.dto.SpotStateDTO;
 import com.czellmer1324.licenseplategame.entities.SpottedStates;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -103,8 +105,11 @@ public class GameService {
             userRepository.save(user);
             return new ServiceResponse(Map.of("Message", "States unmarked successfully"), HttpStatus.OK);
         } catch (Exception e) {
-            IO.println(e.getMessage());
             return new ServiceResponse(Map.of("Message", "Something went wrong please try again"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    protected List<GetMarkedStatesDTO> getMarkedStatesById(int userId) {
+        return gameRepository.findAllByUserUserId(userId);
     }
 }

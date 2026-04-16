@@ -42,9 +42,6 @@ public class InviteService {
         // add the user to the group
         Group group = invite.getGroup();
         group.getMembers().add(user);
-        for (User user1 : group.getMembers()) {
-            IO.println(user1.getUserName());
-        }
 
         try {
             groupRepository.save(group);
