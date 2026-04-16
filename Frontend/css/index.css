@@ -47,8 +47,8 @@ body {
     }
 
     #bottomSign {
-        margin-top: 0px;
-        padding-top: 0px;
+        margin-top: 0;
+        padding-top: 0;
         width: 50%;
         margin-left: auto;
         margin-right: auto;
@@ -63,9 +63,9 @@ body {
 
     #hidden h4 {
         margin-top: .25rem;
-        padding-top: 0px;
-        padding-bottom: 0px;
-        margin-bottom: 0px;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-bottom: 0;
         text-align: center;
     }
 
@@ -76,7 +76,7 @@ body {
         color: white;
         border: none;
         border-radius: 8px;
-        font-size: (.5rem, 1.5vw, 1.5rem);
+        font-size: clamp(.5rem, 1.5vw, 1.5rem);
         cursor: pointer;
     }
 
@@ -110,13 +110,13 @@ body {
 
     h1 {
         font-size: clamp(.75rem, 4vw, 3rem);
-        margin-bottom: 0px;
+        margin-bottom: 0;
         text-align: center;
     }
 
     #signInDiv h3 {
         font-size: clamp(.5rem, 3vw, 2.5rem);
-        margin-bottom: 0px;
+        margin-bottom: 0;
         margin-top: 1rem;
         text-align: center;
     }
@@ -175,7 +175,7 @@ body {
         color: white;
         border: none;
         border-radius: 8px;
-        font-size: (.5rem, 1.5vw, 1.5rem);
+        font-size: clamp(.5rem, 1.5vw, 1.5rem);
         cursor: pointer;
     }
 

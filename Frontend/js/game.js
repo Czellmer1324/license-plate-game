@@ -117,7 +117,7 @@ async function unmarkState(stateCode, button) {
     })
 
     if (response.ok) {
-        const data = await response.json();
+        await response.json();
         // remove the state from found
         found.delete(stateCode);
         // update the state count
@@ -129,7 +129,7 @@ async function unmarkState(stateCode, button) {
         const mapPath = document.querySelector('[data-id="' + stateCode + '"]');
         mapPath.classList.remove("mapFound");
     } else {
-        if (response.status == 401) {
+        if (response.status === 401) {
             alert("you need to log in again!");
             window.location.replace("index.html");
         } else {
@@ -164,7 +164,7 @@ async function markState(stateCode, button) {
         const mapPath = document.querySelector('[data-id="' + data.stateCode + '"]');
         mapPath.classList.add("mapFound");
     } else {
-        if (response.status == 401) {
+        if (response.status === 401) {
             alert("you need to log in again!");
             window.location.replace("index.html");
         } else {
@@ -182,8 +182,8 @@ async function getUserFoundStates() {
     if (response.ok) {
         const data = await response.json();
     
-        for (var i = 0; i < data.length; i++) {
-            var obj = data[i];
+        for (let i = 0; i < data.length; i++) {
+            let obj = data[i];
             found.set(obj["stateCode"], obj["spottedId"]);
         }
 
@@ -206,7 +206,7 @@ function filterStates() {
     const input = document.getElementById("stateSearch").value.toLowerCase();
     const stateButtons = document.getElementsByClassName("stateButton");
 
-    for (var i = 0; i < stateButtons.length; i++) {
+    for (let i = 0; i < stateButtons.length; i++) {
         const button = stateButtons[i];
         const val = button.textContent.toLowerCase();
         

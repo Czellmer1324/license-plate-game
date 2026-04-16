@@ -1,5 +1,5 @@
 const hiddenForm = document.getElementById("hidden");
-const signInDiv = document.getElementById("signInDiv");
+document.getElementById("signInDiv");
 const signUpBtn = document.getElementById("signUpBtn");
 const signInForm = document.getElementById("signInForm");
 const signUpForm = document.getElementById("signUpForm");
@@ -31,15 +31,15 @@ async function signIn() {
     const email = document.getElementById("email").value.toLowerCase();
     const password = document.getElementById("password").value;
 
-    if (email == "" || password == "") {
+    if (email === "" || password === "") {
         alert("All fields must be filled out!");
         return;
     }
 
-    var obj = {
-        "email" : email,
-        "password" : password
-    }
+    let obj = {
+        "email": email,
+        "password": password
+    };
 
     try {
         const response = await fetch(url + "/login", {
@@ -60,7 +60,7 @@ async function signIn() {
             window.location.replace("game.html")
         } else {
             const data = await response.json();
-            if (response.status == 401) {
+            if (response.status === 401) {
                 alert(data["Message"]);
             }
         }
@@ -97,20 +97,20 @@ async function createAccount() {
     const confirmPassword = document.getElementById("confirmPassword").value;
 
     // Need to validate the email and password
-    if (password != confirmPassword) {
+    if (password !== confirmPassword) {
         alert("Your passwords do not match!");
         document.getElementById("createPassword").value = "";
         document.getElementById("confirmPassword").value = "";
         return;
     }
 
-    if (validate_email(email) == false) {
+    if (validate_email(email) === false) {
         alert("Improper email format.");
         document.getElementById("createEmail").value = "";
         return;
     }
 
-    var obj = {
+    let obj = {
         "userName": userName,
         "firstName": firstName,
         "lastName": lastName,
@@ -140,19 +140,19 @@ async function createAccount() {
 
             alert(message);
         } else {
-            if (response.status == 409) {
+            if (response.status === 409) {
                 const data = await response.json();
                 const message = data["Message"];
 
-                if (message == "User name already exists") {
+                if (message === "User name already exists") {
                     document.getElementById("createUserName").value = "";
                     alert("User name is already taken, please select a new one");
                 } else {
                     document.getElementById("createEmail").value = "";
                     alert("There is already an email with this account, please log into that one");
                 }
-            } else if (response.status == 500) {
-                alert("There was an error trying to create your account please try again in a few momenets");
+            } else if (response.status === 500) {
+                alert("There was an error trying to create your account please try again in a few moments");
             }
         }
     } catch (error) {
@@ -163,7 +163,7 @@ async function createAccount() {
 
 function validate_email(email) {
     const regex = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/
-    if (regex.test(email) == false) {
+    if (regex.test(email) === false) {
         console.log("email invalid")
     }
     return regex.test(email)
