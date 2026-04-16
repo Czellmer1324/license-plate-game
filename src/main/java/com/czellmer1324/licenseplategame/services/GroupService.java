@@ -144,4 +144,29 @@ public class GroupService {
         }
 
     }
+
+    public ServiceResponse removeUser(String userName) {
+        // Get the person sending the request
+        Optional<Integer> opId = util.getUserIDFromAuth();
+        if (opId.isEmpty()) return util.noAuthResponse();
+        int id = opId.get();
+        // get the group they own
+        Optional<Group> opGroup = groupRepository.findByGroupOwnerUserId(id);
+        if (opGroup.isEmpty()) return new ServiceResponse(Map.of("Message", "This user does not own a group"), HttpStatus.BAD_REQUEST);
+        Group group = opGroup.get();
+        // check to make sure the user they are trying to remove is part of the group
+        for (User user : group.getMembers()) {
+            if (user.getUserName().equals(userName)) {
+                group.getMembers().remove(user);
+                try {
+                    groupRepository.save(group);
+                    return new ServiceResponse(Map.of("Message", "User removed from group"), HttpStatus.OK);
+                } catch (Exception e) {
+                    return new ServiceResponse(Map.of("Message", "Something went wrong, try again"), HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        }
+
+        return new ServiceResponse(Map.of("Message", "User is not part of this group"), HttpStatus.CONFLICT);
+    }
 }

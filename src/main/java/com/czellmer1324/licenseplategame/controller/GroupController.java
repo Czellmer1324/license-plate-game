@@ -52,4 +52,10 @@ public class GroupController {
         ServiceResponse responseInfo = service.changeEndDate(info.newDate());
         return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
     }
+
+    @PutMapping("/remove-user/{userName}")
+    public ResponseEntity<?> removeUser(@PathVariable String userName) {
+        ServiceResponse responseInfo = service.removeUser(userName);
+        return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
+    }
 }
