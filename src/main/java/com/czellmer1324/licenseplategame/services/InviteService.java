@@ -52,6 +52,24 @@ public class InviteService {
         }
     }
 
+    protected ServiceResponse declineInvite(User user, long inviteId) {
+        Optional<Invite> opInvite = repository.findById(inviteId);
+        if (opInvite.isEmpty()) return new ServiceResponse(Map.of("Message", "This invite does not exist"), HttpStatus.BAD_REQUEST);
+        Invite invite = opInvite.get();
+
+        //check to make sure the accepting user is the intended recipient
+        if (!invite.getUser().getUserName().equals(user.getUserName())) {
+            return new ServiceResponse(Map.of("Message", "This user is the not the intended recipient"), HttpStatus.CONFLICT);
+        }
+
+        try {
+            repository.deleteById(inviteId);
+            return new ServiceResponse(Map.of("Message", "Invite declined"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ServiceResponse(Map.of("Message", "Something went wrong, try again"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     protected List<GetInviteDTO> getInvitesByUserId(int userId) {
         return repository.findAllByUserUserId(userId);
     }

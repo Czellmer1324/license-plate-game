@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/accept-invite")
-    public ResponseEntity<?> acceptInvite(@RequestBody AcceptInviteDTO requestBody) {
+    public ResponseEntity<?> acceptInvite(@RequestBody InviteResponseDTO requestBody) {
         ServiceResponse info = service.acceptInvite(requestBody);
         return ResponseEntity.status(info.code()).body(info.response());
     }
@@ -41,6 +41,12 @@ public class UserController {
     @GetMapping("/invites")
     public ResponseEntity<?> getInvites() {
         ServiceResponse info = service.getInvites();
+        return ResponseEntity.status(info.code()).body(info.response());
+    }
+
+    @PutMapping("/decline-invite")
+    public ResponseEntity<?> declineInvite(@RequestBody InviteResponseDTO requestBody) {
+        ServiceResponse info = service.declineInvite(requestBody.inviteId());
         return ResponseEntity.status(info.code()).body(info.response());
     }
 }

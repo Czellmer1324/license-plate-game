@@ -1,7 +1,6 @@
 package com.czellmer1324.licenseplategame.services;
 
 import com.czellmer1324.licenseplategame.dto.*;
-import com.czellmer1324.licenseplategame.entities.Invite;
 import com.czellmer1324.licenseplategame.jwt.JwtUtils;
 import com.czellmer1324.licenseplategame.repository.UserRepository;
 import com.czellmer1324.licenseplategame.entities.User;
@@ -88,7 +87,7 @@ public class UserService {
         }
     }
 
-    public ServiceResponse acceptInvite(AcceptInviteDTO info) {
+    public ServiceResponse acceptInvite(InviteResponseDTO info) {
         // get the user
         Optional<User> opUser = utils.getUserFromAuth();
         if (opUser.isEmpty()) return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
@@ -104,6 +103,13 @@ public class UserService {
         List<GetInviteDTO> invites = inviteService.getInvitesByUserId(user.getUserId());
         // return the invites
         return new ServiceResponse(invites, HttpStatus.OK);
+    }
+
+    public ServiceResponse declineInvite(long inviteId) {
+        // get the user
+        Optional<User> opUser = utils.getUserFromAuth();
+        if (opUser.isEmpty()) return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
+        return inviteService.declineInvite(opUser.get(), inviteId);
     }
 
     protected Optional<User> getUserByUserName(String userName) {
