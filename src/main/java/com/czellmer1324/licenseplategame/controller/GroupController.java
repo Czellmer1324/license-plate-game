@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.ZonedDateTime;
-
 @RestController
 @RequestMapping("/group")
 @RequiredArgsConstructor
@@ -62,6 +60,12 @@ public class GroupController {
     @GetMapping("/member-map/{userId}/{groupId}")
     public ResponseEntity<?> getMemberFoundStates(@PathVariable int userId, @PathVariable long groupId) {
         ServiceResponse responseInfo = service.getMemberFoundStates(userId, groupId);
+        return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
+    }
+
+    @DeleteMapping("/leave-group/{groupId}")
+    public ResponseEntity<?> leaveGroup(@PathVariable long groupId) {
+        ServiceResponse responseInfo = service.leaveGroup(groupId);
         return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
     }
 }
