@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -121,5 +122,26 @@ public class GroupService {
         }
 
         return new ServiceResponse(safeReturn, HttpStatus.OK);
+    }
+
+    public ServiceResponse changeEndDate(ZonedDateTime newDate) {
+        Optional<Integer> opId = util.getUserIDFromAuth();
+        if (opId.isEmpty()) return util.noAuthResponse();
+        int id = opId.get();
+
+        // get the group
+        Optional<Group> opGroup = groupRepository.findByGroupOwnerUserId(id);
+        if (opGroup.isEmpty()) return new ServiceResponse(Map.of("Message", "This user does not own a group"), HttpStatus.BAD_REQUEST);
+        Group group = opGroup.get();
+
+        group.setEndDate(newDate);
+
+        try {
+            groupRepository.save(group);
+            return new ServiceResponse(Map.of("Message", "End date updated"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ServiceResponse(Map.of("Message", "Something went wrong please try again"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 package com.czellmer1324.licenseplategame.controller;
 
+import com.czellmer1324.licenseplategame.dto.ChangeEndDateDTO;
 import com.czellmer1324.licenseplategame.dto.CreateGroupDTO;
 import com.czellmer1324.licenseplategame.dto.InviteDTO;
 import com.czellmer1324.licenseplategame.dto.ServiceResponse;
@@ -7,6 +8,8 @@ import com.czellmer1324.licenseplategame.services.GroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.ZonedDateTime;
 
 @RestController
 @RequestMapping("/group")
@@ -41,6 +44,12 @@ public class GroupController {
     @GetMapping("/info/{groupId}")
     public ResponseEntity<?> getGroupInfo(@PathVariable long groupId) {
         ServiceResponse responseInfo = service.getGroupInfo(groupId);
+        return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
+    }
+
+    @PutMapping("/update-end")
+    public ResponseEntity<?> changeEndDate(@RequestBody ChangeEndDateDTO info) {
+        ServiceResponse responseInfo = service.changeEndDate(info.newDate());
         return ResponseEntity.status(responseInfo.code()).body(responseInfo.response());
     }
 }
