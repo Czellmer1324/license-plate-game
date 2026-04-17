@@ -1,4 +1,4 @@
-const url = "localhost:8080/game";
+const url = "http://localhost:8080/game";
 const found = new Map;
 const states = new Map([
     ["Arizona", 'AZ'],
@@ -63,6 +63,35 @@ document.getElementById("groupButton").addEventListener("click", function () {
     window.location.assign("groups.html");
 })
 
+document.getElementById("logOutBtn").addEventListener("click", function () {
+    localStorage.clear();
+    window.location.replace("index.html")
+})
+
+document.getElementById("clearAllBtn").addEventListener("click", function () {
+    const userConfirmed = window.confirm("Do you really want to clear all marked states?");
+    if (userConfirmed) {
+        clearAllMarkedStates().then(function () {
+            // clear the found storage.
+            found.clear();
+            // remove all found from the map
+            states.forEach(function (value, key) {
+                const button = document.getElementById(key);
+                const mapPath = document.querySelector('[data-id="' + value + '"]');
+                if (button.classList.contains("found")) {
+                    button.classList.remove("found");
+                    button.classList.add("notFound");
+                    mapPath.classList.remove("mapFound");
+                }
+            });
+
+            updateStateCount();
+            // remove all found from the list
+            // update found amount at the top
+        }).catch()
+    }
+})
+
 document.getElementById("dropDownBtn").addEventListener("click", function (event) {
     document.getElementById("dropdownLinks").classList.toggle("show");
     event.stopPropagation();
@@ -81,6 +110,27 @@ function replaceUserName() {
     newEl.textContent = "Hello, " + JSON.parse(localStorage.getItem("userInfo"))["User Name"] + "!";
     newEl.id = "displayUserName";
     old.replaceWith(newEl);
+}
+
+async function clearAllMarkedStates() {
+    const response = await fetch(url + "/unmark-all", {
+        method: "DELETE",
+        headers: {
+            'Authorization': "Bearer " + localStorage.getItem("jwt")
+        }
+    })
+
+    if (response.ok) {
+        const message = await response.json();
+        alert(message["Message"]);
+    } else {
+        if (response.status === 401) {
+            alert("you need to log in again!");
+            window.location.replace("index.html");
+        } else {
+            alert("something went wrong please try again");
+        }
+    }
 }
 
 async function createStateList() {
@@ -116,10 +166,19 @@ function stateClick(id) {
     const stateCode = states.get(id);
     const buttonClicked = document.getElementById(id);
 
+    buttonClicked.disabled = true;
     if (buttonClicked.classList.contains("notFound")) {
-        markState(stateCode, buttonClicked);
+        markState(stateCode, buttonClicked).then(
+            function () {
+                buttonClicked.disabled = false;
+            }
+        );
     } else {
-        unmarkState(stateCode, buttonClicked);
+        unmarkState(stateCode, buttonClicked).then(
+            function () {
+                buttonClicked.disabled = false;
+            }
+        );
     }
 }
 

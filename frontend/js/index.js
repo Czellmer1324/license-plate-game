@@ -2,18 +2,21 @@ const hiddenForm = document.getElementById("hidden");
 const signUpBtn = document.getElementById("signUpBtn");
 const signInForm = document.getElementById("signInForm");
 const signUpForm = document.getElementById("signUpForm");
-const url = "localhost:8080/user";
+const url = "http://localhost:8080/user";
 
 signUpBtn.onclick = function() {
-    hiddenForm.style.display = "block";
+    document.getElementById("hidden").classList.add("show");
+    document.getElementById("signInDiv").classList.add("signup-active");
 }
 
 document.getElementById("bottomSign").addEventListener('click', function() {
-    hiddenForm.style.display = "none";
+    document.getElementById("hidden").classList.remove("show");
+    document.getElementById("signInDiv").classList.remove("signup-active");
 })
 
 document.getElementById("topBackSign").addEventListener('click', function() {
-    hiddenForm.style.display = "none";
+    document.getElementById("hidden").classList.remove("show");
+    document.getElementById("signInDiv").classList.remove("signup-active");
 })
 
 signInForm.onsubmit  = function(event) {
