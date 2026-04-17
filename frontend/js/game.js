@@ -59,6 +59,22 @@ window.addEventListener("load", function() {
     createStateList();
 });
 
+document.getElementById("groupButton").addEventListener("click", function () {
+    window.location.assign("groups.html");
+})
+
+document.getElementById("dropDownBtn").addEventListener("click", function (event) {
+    document.getElementById("dropdownLinks").classList.toggle("show");
+    event.stopPropagation();
+});
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+    if (!event.target.closest('.dropdown')) {
+        document.getElementById("dropdownLinks").classList.remove("show");
+    }
+}
+
 function replaceUserName() {
     const old = document.getElementById("replaceWithUser");
     const newEl = document.createElement("p");
@@ -216,5 +232,4 @@ function filterStates() {
             button.classList.add("hidden");
         }
     }
-
 }

@@ -1,0 +1,337 @@
+:root {
+    --font-sm: clamp(0.75rem, 1.5vw, 0.95rem);
+    --font-md: clamp(0.9rem, 2vw, 1.1rem);
+    --font-lg: clamp(1.2rem, 3vw, 1.8rem);
+
+    --bg: #f5f7fb;
+
+    --glass: rgba(255, 255, 255, 0.65);
+    --glass-strong: rgba(255, 255, 255, 0.8);
+
+    --border: rgba(0, 0, 0, 0.08);
+
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 999px;
+
+    --text-sm: clamp(0.8rem, 1.2vw, 0.95rem);
+    --text-md: clamp(0.95rem, 2vw, 1.2rem);
+    --text-lg: clamp(1.3rem, 3vw, 2.2rem);
+
+    --blur: 12px;
+}
+
+@media (max-width: 600px) {
+    :root {
+        --text-sm: 0.85rem;
+        --text-md: 1rem;
+        --text-lg: 1.4rem;
+    }
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: #1a1a1a;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* =========================
+   HEADER
+========================= */
+.header {
+    padding: 1rem clamp(1rem, 3vw, 2.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    gap: 1.25rem;
+}
+
+.topInfo {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.centerInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    z-index: 1000;
+}
+
+#stateCountDiv {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    justify-content: center;
+}
+
+#stateCountDiv p {
+    margin: 0;
+}
+
+#replaceWithUser,
+#displayUserName {
+    font-size: var(--text-md);
+    margin: 0;
+}
+
+.dropbtn {
+    font-size: var(--text-sm);
+}
+
+.header h1 {
+    font-size: var(--text-lg);
+    margin: 0;
+}
+
+#stateCountDiv p {
+    font-size: var(--text-md);
+    margin: 0;
+}
+
+/* =========================
+   DROPDOWN
+========================= */
+
+.dropdown {
+    grid-column: 3;
+    justify-self: end;
+    position: relative;
+}
+
+.dropbtn {
+    background: var(--glass);
+    color: #1a1a1a;
+
+    border: 1px solid var(--border);
+
+    padding: 8px 16px;
+    font-size: var(--font-sm);
+
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+
+    transition: all 0.2s ease;
+}
+
+.dropbtn:hover {
+    transform: translateY(-1px);
+    background: var(--glass-strong);
+}
+
+.dropdown-content {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    min-width: 180px;
+
+    padding: 0.5rem;
+
+    background: var(--glass);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow);
+
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+
+    transition: all 0.2s ease;
+
+    z-index: 1000;
+}
+
+.dropdown-content.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.dropdown-content button {
+    width: 100%;
+    text-align: left;
+
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+
+    color: #1a1a1a;
+    cursor: pointer;
+
+    border-radius: 10px;
+
+    transition: background 0.2s ease;
+}
+
+.dropdown-content button:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* =========================
+   SPLIT LAYOUT (KEY FEATURE)
+========================= */
+
+.main-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    padding: 1rem;
+    align-items: start;
+}
+
+.map-panel,
+.list-panel {
+    width: 100%;
+
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+
+    padding: 1rem;
+}
+
+/* =========================
+   MOBILE RESPONSIVE LAYOUT
+========================= */
+
+@media (max-width: 900px) {
+    .main-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-container {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+#stateSearch {
+    width: 100%;
+    padding: 0.75rem;
+
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+
+    font-size: var(--font-md);
+}
+
+/* =========================
+   STATE LIST
+========================= */
+
+#stateList {
+    list-style: none;
+    padding: 0;
+
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+#stateList .stateButton {
+    width: 100%;
+    padding: 0.75rem;
+
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+
+    background: transparent;
+
+    font-size: var(--font-sm);
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+#stateList .stateButton:hover {
+    background: rgba(0,0,0,0.04);
+}
+
+#stateList .found {
+    background: rgba(120, 0, 200, 0.12);
+}
+
+#stateList .notFound:hover {
+    background: rgba(0,0,0,0.04);
+}
+
+.hidden {
+    display: none;
+}
+
+/* =========================
+   MAP
+========================= */
+
+svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+path {
+    fill: #ddd;
+    stroke: #333;
+    stroke-width: 1;
+}
+
+.mapFound {
+    fill: rgba(120, 0, 200, 0.8);
+}
+
+/* =========================
+   SMALL MOBILE TWEAKS
+========================= */
+
+@media (max-width: 600px) {
+    .topInfo {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 0.75rem;
+    }
+
+    .dropdown {
+        justify-self: center;
+    }
+
+    .list-panel {
+        padding: 0.75rem;
+    }
+}

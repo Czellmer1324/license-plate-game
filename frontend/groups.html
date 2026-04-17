@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Groups</title>
+        <link rel="stylesheet" href="css/groups.css">
+    </head>
+    <body>
+
+        <div class="container">
+            <h1>Your groups</h1>
+
+            <!-- ===================== INVITES SECTION ===================== -->
+            <div class="section">
+                <div class="section-header">Pending Invites</div>
+
+                <div class="scrollable-list" id="invitesList">
+                    <!-- Example Invite Item -->
+                    <div class="list-item">
+                        <div>
+                            <div class="group-name">Chess Club</div>
+                            <div>Invited by: Alice</div>
+                        </div>
+
+                        <div class="invite-actions">
+                            <!-- Hook these buttons to your API calls -->
+                            <button class="accept-btn">Accept</button>
+                            <button class="decline-btn">Decline</button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div>
+                            <div class="group-name">Study Group</div>
+                            <div>Invited by: Bob</div>
+                        </div>
+
+                        <div class="invite-actions">
+                            <button class="accept-btn">Accept</button>
+                            <button class="decline-btn">Decline</button>
+                        </div>
+                    </div>
+
+                    <!-- If no invites exist, show this instead -->
+                    <!-- <div class="empty-state">No pending invites</div> -->
+                </div>
+            </div>
+
+
+            <!-- ===================== MEMBER OF GROUPS ===================== -->
+            <div class="section">
+                <div class="section-header">Groups You're In</div>
+
+                <div class="scrollable-list" id="memberGroupsList">
+                    <!-- Clicking the item should navigate to group members page -->
+                    <div class="list-item" onclick="openGroup('group-id-1')">
+                        <div class="group-name">Game Night Crew</div>
+                    </div>
+
+                    <div class="list-item" onclick="openGroup('group-id-2')">
+                        <div class="group-name">Work Team</div>
+                    </div>
+
+                    <!-- <div class="empty-state">You're not in any groups yet</div> -->
+                </div>
+            </div>
+
+
+            <!-- ===================== OWNED GROUP ===================== -->
+            <div class="section">
+                <div class="section-header">Your Group</div>
+
+                <!-- If the user owns a group -->
+                <div class="list-item" onclick="manageOwnedGroup('owned-group-id')">
+                    <div class="group-name">My Managed Group</div>
+                    <button class="manage-btn">Manage</button>
+                </div>
+
+                <!-- If the user does not own a group -->
+                <!-- <div class="empty-state">You don't own a group</div> -->
+            </div>
+
+        </div>
+
+
+        <script src="./js/groups.js"></script>
+
+    </body>
+</html>
