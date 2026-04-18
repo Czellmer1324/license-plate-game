@@ -1,4 +1,3 @@
-const hiddenForm = document.getElementById("hidden");
 const signUpBtn = document.getElementById("signUpBtn");
 const signInForm = document.getElementById("signInForm");
 const signUpForm = document.getElementById("signUpForm");
@@ -138,7 +137,7 @@ async function createAccount() {
             document.getElementById("createPassword").value = "";
             document.getElementById("confirmPassword").value = "";
 
-            hiddenForm.style.display = "none";
+            document.getElementById("signInDiv").classList.remove("signup-active");
 
             alert(message);
         } else {
