@@ -4,6 +4,41 @@ let ownedGroup;
 let groups;
 
 /***************************************************
+ DROP DOWN MENU
+ ***************************************************/
+document.getElementById("dropDownBtn").addEventListener("click", function (event) {
+    document.getElementById("dropdownLinks").classList.toggle("show");
+    event.stopPropagation();
+});
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+    if (!event.target.closest('.dropdown')) {
+        document.getElementById("dropdownLinks").classList.remove("show");
+    }
+}
+
+document.getElementById("homeBtn").addEventListener('click', () => {
+    window.location.assign("game.html");
+})
+
+document.getElementById("logOutBtn").addEventListener("click", function () {
+    localStorage.clear();
+    window.location.replace("index.html")
+})
+
+const modal = document.getElementById("createGroupModal");
+
+document.getElementById("createBtn").addEventListener("click", () => {
+    document.getElementById("dropdownLinks").classList.remove("show");
+    modal.classList.add("show");
+})
+
+document.getElementById("cancelCreateGroup").addEventListener("click", () => {
+    modal.classList.remove("show");
+});
+
+/***************************************************
  EVENT LISTENERS
  ***************************************************/
 window.addEventListener("load", function() {
@@ -16,8 +51,22 @@ window.addEventListener("load", function() {
     }).catch()
 });
 
-document.getElementById("backToGame").addEventListener('click', () => {
-    window.location.assign("game.html");
+document.getElementById("createGroupForm").addEventListener('submit', (event)=> {
+    event.preventDefault();
+    const buttonClicked = document.getElementById("submitCreateGroup");
+    buttonClicked.disabled = true;
+    const groupName = document.getElementById("groupName").value;
+    const date = document.getElementById("endDate").value;
+    console.log(groupName);
+    console.log(date);
+    createGroupForUser(groupName, date).then((group) => {
+        // should probably make it so that the group returns everything
+        ownedGroup = group;
+        addGroup(group);
+        updateOwnedGroup();
+        buttonClicked.disabled = false;
+        modal.classList.remove("show");
+    }).catch()
 })
 
 /***************************************************
@@ -260,19 +309,61 @@ function openGroup(group) {
     alert("Opening group");
 }
 
+async function createGroupForUser(groupName, endDate) {
+    const requestObj = {
+        "groupName" : groupName,
+        "endDate" : endDate
+    }
+
+    const response = await fetch(url + "/group/create", {
+        method : "POST",
+        headers : {
+            'Authorization' : 'Bearer ' + localStorage.getItem('jwt'),
+            'Content-Type': 'application/json'
+        },
+        body : JSON.stringify(requestObj)
+    })
+
+    if (response.ok) {
+        const responseInfo = await response.json();
+        const group = responseInfo["Group"];
+        alert(responseInfo["Message"]);
+        return group;
+    } else if (response.status === 401) {
+        alert("You need to sign in again");
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+    } else {
+        alert("Something went wrong, try reloading page.");
+        throw new Error("Something went wrong");
+    }
+}
+
 /***************************************************
  OWNED GROUP
  ***************************************************/
 function createOwnedGroup() {
-    const ownedGroupSection = document.getElementById("ownedGroupArea");
     document.getElementById("owned-loading").remove();
-    console.log(ownedGroup);
+    createOwnedGroupText()
+}
+
+function updateOwnedGroup() {
+    document.getElementById("empty-owned").remove();
+    createOwnedGroupText();
+}
+
+function createOwnedGroupText() {
+    const ownedGroupSection = document.getElementById("ownedGroupArea");
     if (ownedGroup === undefined) {
         const h3 = document.createElement("h3");
         h3.classList.add("empty-state");
+        h3.id = "empty-owned"
         h3.textContent = "You do not own a group";
         ownedGroupSection.appendChild(h3);
     } else {
+        // REMOVE THE CREATE GROUP BUTTON FROM THE DROPDOWN MENU
+        document.getElementById("createBtn").remove();
         const h3 = document.createElement("h3");
         h3.classList.add("group-name");
         h3.textContent = ownedGroup["groupName"];

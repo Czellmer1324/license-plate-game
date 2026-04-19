@@ -33,8 +33,9 @@ public class GroupService {
 
         try {
             Group group = new Group(groupDTO.groupName(), user, List.of(user), groupDTO.endDate());
-            groupRepository.save(group);
-            return new ServiceResponse(Map.of("Message", "Group created successfully"), HttpStatus.CREATED);
+            Group savedGroup = groupRepository.save(group);
+            GetGroupsDTO groupReturn = new GetGroupsDTO(savedGroup.getGroupName(), user.getUserName(), savedGroup.getGroupId(), savedGroup.getEndDate());
+            return new ServiceResponse(Map.of("Message", "Group created successfully", "Group", groupReturn), HttpStatus.CREATED);
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             return new ServiceResponse(Map.of("Message", "User already owns a group"), HttpStatus.CONFLICT);
         } catch (Exception e) {
