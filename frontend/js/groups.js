@@ -2,11 +2,22 @@ const url = "http://localhost:8080";
 let invites;
 let ownedGroup;
 
+/***************************************************
+ EVENT LISTENERS
+ ***************************************************/
 window.addEventListener("load", function() {
     getInvites().then(function () {
         createInvites();
     }).catch()
 });
+
+document.getElementById("backToGame").addEventListener('click', () => {
+    window.location.assign("game.html");
+})
+
+/***************************************************
+ INVITES
+ ***************************************************/
 
 async function getInvites() {
     const response = await fetch(url + "/user/invites", {
@@ -172,3 +183,7 @@ async function declineInvite(inviteId) {
         throw new Error("Something went wrong.")
     }
 }
+
+/***************************************************
+ OWNED GROUP
+ ***************************************************/
