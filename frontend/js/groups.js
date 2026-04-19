@@ -71,7 +71,7 @@ function createInvites() {
             acceptBtn.addEventListener('click', function () {
                 acceptBtn.disabled = true;
                 acceptInvite(inviteId).then(() => {
-                    invites.filter(i => i["inviteId"] !== inviteId);
+                    invites = invites.filter(i => i["inviteId"] !== inviteId);
                     removeInviteFromScreen("invite" + inviteId);
                     acceptBtn.disabled = false;
                 }).catch(() => {
@@ -88,7 +88,7 @@ function createInvites() {
             declineBtn.addEventListener('click', function () {
                 declineBtn.disabled = true;
                 declineInvite(inviteId).then(() => {
-                    invites.filter(i => i["inviteId"] !== inviteId);
+                    invites = invites.filter(i => i["inviteId"] !== inviteId);
                     removeInviteFromScreen("invite" + inviteId);
                     declineBtn.disabled = false;
                 }).catch(() => {
@@ -108,12 +108,67 @@ function createInvites() {
 }
 
 function removeInviteFromScreen(divId) {
+    document.getElementById(divId).remove();
+
+    if (invites.length === 0) {
+        const inviteContainer = document.getElementById("invitesList")
+        const h3 = document.createElement("h3");
+        h3.classList.add("empty-state")
+        h3.textContent = "No pending invites"
+        inviteContainer.appendChild(h3);
+    }
 }
 
 async function acceptInvite(inviteId) {
+    const responseObj = {
+        "inviteId" : inviteId
+    }
+    const response = await fetch(url + "/user/accept-invite", {
+        method: "POST",
+        headers: {
+            'Authorization': "Bearer " + localStorage.getItem("jwt"),
+            'Content-Type': 'application/json'
+        },
+        body : JSON.stringify(responseObj)
 
+    })
+
+    if (response.ok) {
+        const message = await response.json();
+        alert(message["Message"]);
+    } else if (response.status === 401) {
+        localStorage.clear();
+        alert("You need to log in again");
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+    } else {
+        throw new Error("Something went wrong.")
+    }
 }
 
 async function declineInvite(inviteId) {
+    const responseObj = {
+        "inviteId" : inviteId
+    }
+    const response = await fetch(url + "/user/decline-invite", {
+        method: "PUT",
+        headers: {
+            'Authorization': "Bearer " + localStorage.getItem("jwt"),
+            'Content-Type': 'application/json'
+        },
+        body : JSON.stringify(responseObj)
 
+    })
+
+    if (response.ok) {
+        const message = await response.json();
+        alert(message["Message"]);
+    } else if (response.status === 401) {
+        localStorage.clear();
+        alert("You need to log in again");
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+    } else {
+        throw new Error("Something went wrong.")
+    }
 }

@@ -137,6 +137,7 @@ async function createAccount() {
             document.getElementById("createPassword").value = "";
             document.getElementById("confirmPassword").value = "";
 
+            document.getElementById("hidden").classList.remove("show");
             document.getElementById("signInDiv").classList.remove("signup-active");
 
             alert(message);
