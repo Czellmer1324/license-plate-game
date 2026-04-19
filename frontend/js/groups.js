@@ -153,6 +153,9 @@ async function acceptInvite(inviteId) {
 
     if (response.ok) {
         const message = await response.json();
+        console.log(message);
+        const groupJoined = message["Group"];
+        addGroup(groupJoined);
         alert(message["Message"]);
     } else if (response.status === 401) {
         localStorage.clear();
@@ -219,6 +222,7 @@ function createGroups() {
     if (groups.length === 0) {
         const h3 = document.createElement("h3");
         h3.classList.add("empty-state");
+        h3.id = "empty-groups-list";
         h3.textContent = "You're not in any groups";
         groupsList.appendChild(h3);
     } else {
@@ -235,6 +239,21 @@ function createGroups() {
             groupsList.appendChild(button);
         })
     }
+}
+
+function addGroup(groupJoined) {
+    const groupsList = document.getElementById("memberGroupsList");
+    if (groups.length === 0) {
+        document.getElementById("empty-groups-list").remove();
+    }
+    groups.push(groupJoined);
+    const button = document.createElement("button");
+    button.classList.add("list-item");
+    button.textContent = groupJoined["groupName"];
+    button.addEventListener('click', () => {
+        openGroup(groupJoined)
+    })
+    groupsList.appendChild(button);
 }
 
 function openGroup(group) {

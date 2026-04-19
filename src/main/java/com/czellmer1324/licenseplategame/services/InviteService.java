@@ -1,5 +1,6 @@
 package com.czellmer1324.licenseplategame.services;
 
+import com.czellmer1324.licenseplategame.dto.GetGroupsDTO;
 import com.czellmer1324.licenseplategame.dto.GetInviteDTO;
 import com.czellmer1324.licenseplategame.dto.ServiceResponse;
 import com.czellmer1324.licenseplategame.entities.Group;
@@ -42,11 +43,13 @@ public class InviteService {
         // add the user to the group
         Group group = invite.getGroup();
         group.getMembers().add(user);
+        GetGroupsDTO groupsDTO = new GetGroupsDTO(group.getGroupName(),
+                group.getGroupOwner().getUserName(), group.getGroupId(), group.getEndDate());
 
         try {
             groupRepository.save(group);
             repository.deleteById(inviteId);
-            return new ServiceResponse(Map.of("Message", "Invite accepted"), HttpStatus.OK);
+            return new ServiceResponse(Map.of("Message", "Invite accepted", "Group", groupsDTO), HttpStatus.OK);
         } catch (Exception e) {
             return new ServiceResponse(Map.of("Message", "Something went wrong, try again"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
