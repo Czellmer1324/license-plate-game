@@ -614,6 +614,7 @@ document.getElementById("deleteGroupBtn").addEventListener('click', () => {
             })
             dropDown.appendChild(createBtn);
             buttonClicked.disabled = false;
+            document.getElementById("memberList").replaceChildren();
             closeManageGroup();
         }).catch()
     }
@@ -635,6 +636,50 @@ async function deleteGroup() {
         localStorage.clear();
         window.location.replace("index.html");
         throw new Error("Unauthorized");
+    } else {
+        alert("Something went wrong, try again");
+        throw new Error("Something went wrong");
+    }
+}
+
+document.getElementById("inviteUserBtn").addEventListener('click', () => {
+    const buttonClicked = document.getElementById("inviteUserBtn");
+    buttonClicked.disabled = true;
+    const userName = document.getElementById("inviteInput").value;
+    inviteUser(userName).then(() => {
+        document.getElementById("inviteInput").value = ""
+        buttonClicked.disabled = false;
+    }).catch(() => {
+        document.getElementById("inviteInput").value = ""
+        buttonClicked.disabled = false;
+    })
+})
+
+async function inviteUser(userName) {
+    const requestObject = {
+        "userName" : userName
+    }
+    const response = await fetch(url + "/group/invite/" + ownedGroup["groupId"], {
+        method : "PUT",
+        headers : {
+            "Authorization" : "Bearer " + localStorage.getItem("jwt"),
+            "Content-type" : 'application/json'
+        },
+        body: JSON.stringify(requestObject)
+    })
+
+    if (response.ok) {
+        const responseInfo = await response.json();
+        alert(responseInfo["Message"]);
+    } else if (response.status === 401) {
+        alert("You need to sign in again");
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+    } else if (response.status === 409 || response.status === 404) {
+        const responseInfo = await response.json();
+        alert(responseInfo["Message"]);
+        throw new Error("Conflict");
     } else {
         alert("Something went wrong, try again");
         throw new Error("Something went wrong");

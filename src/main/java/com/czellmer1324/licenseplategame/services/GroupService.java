@@ -55,7 +55,9 @@ public class GroupService {
         }
 
         try {
-            groupRepository.delete(opGroup.get());
+            Group group = opGroup.get();
+            inviteService.deleteAllByGroupId(group.getGroupId());
+            groupRepository.deleteById(group.getGroupId());
             return new ServiceResponse(Map.of("Message", "Group delete successfully"), HttpStatus.OK);
         } catch (Exception e) {
             return new ServiceResponse(Map.of("Message", "Something went wrong, try again"), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -80,7 +82,7 @@ public class GroupService {
         // make sure the user they are trying to invite exists
         Optional<User> opInvitee = userService.getUserByUserName(inviteDTO.userName());
         if (opInvitee.isEmpty())
-            return new ServiceResponse(Map.of("Message", "This user does not exist"), HttpStatus.BAD_REQUEST);
+            return new ServiceResponse(Map.of("Message", "This user does not exist"), HttpStatus.NOT_FOUND);
         // check to make sure the user is not already part of the group
         if (group.getMembers().contains(opInvitee.get()))
             return new ServiceResponse(Map.of("Message", "User is already a part of this group"), HttpStatus.CONFLICT);

@@ -476,6 +476,7 @@ button {
 .section-block h3 {
     margin: 0;
     font-size: var(--font-md);
+    text-align: center;
 }
 
 /* =========================

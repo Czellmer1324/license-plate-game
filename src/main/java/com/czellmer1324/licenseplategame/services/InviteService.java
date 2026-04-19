@@ -8,6 +8,7 @@ import com.czellmer1324.licenseplategame.entities.Invite;
 import com.czellmer1324.licenseplategame.entities.User;
 import com.czellmer1324.licenseplategame.repository.GroupRepository;
 import com.czellmer1324.licenseplategame.repository.InviteRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -75,5 +76,10 @@ public class InviteService {
 
     protected List<GetInviteDTO> getInvitesByUserId(int userId) {
         return repository.findAllByUserUserId(userId);
+    }
+
+    @Transactional
+    protected void deleteAllByGroupId(long groupId) {
+        repository.deleteAllInBatchByGroupGroupId(groupId);
     }
 }
