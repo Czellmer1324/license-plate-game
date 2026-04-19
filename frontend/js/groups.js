@@ -1,13 +1,18 @@
 const url = "http://localhost:8080";
 let invites;
 let ownedGroup;
+let groups;
 
 /***************************************************
  EVENT LISTENERS
  ***************************************************/
 window.addEventListener("load", function() {
-    getInvites().then(function () {
+    getInvites().then(() => {
         createInvites();
+    }).catch()
+    loadGroups().then(() => {
+        createGroups();
+        createOwnedGroup();
     }).catch()
 });
 
@@ -32,8 +37,10 @@ async function getInvites() {
     } else if (response.status === 401) {
         alert("you need to log in again!");
         window.location.replace("index.html");
+        throw new Error("Unauthorized");
     } else {
-        alert("Something went wrong, try reloading page.")
+        alert("Something went wrong, try reloading page.");
+        throw new Error("Something went wrong");
     }
 }
 
@@ -185,5 +192,83 @@ async function declineInvite(inviteId) {
 }
 
 /***************************************************
+ GROUPS
+ ***************************************************/
+async function loadGroups() {
+    const response = await fetch(url + "/group/get-groups", {
+        method: 'GET',
+        headers: {
+            'Authorization' : 'Bearer ' + localStorage.getItem('jwt')
+        }
+    })
+
+    if (response.ok) {
+        groups = await response.json();
+    } else if (response.status === 401) {
+        throw new Error("Unauthorized");
+    } else {
+        alert("Something went wrong, try reloading page.");
+        throw new Error("Something went wrong");
+    }
+}
+
+function createGroups() {
+    const groupsList = document.getElementById("memberGroupsList");
+    document.getElementById("groups-loading").remove();
+    console.log()
+    if (groups.length === 0) {
+        const h3 = document.createElement("h3");
+        h3.classList.add("empty-state");
+        h3.textContent = "You're not in any groups";
+        groupsList.appendChild(h3);
+    } else {
+        groups.forEach(group => {
+            if (group["groupOwnerUserName"] === (JSON.parse(localStorage.getItem("userInfo"))["User Name"])) {
+                ownedGroup = group;
+            }
+            const button = document.createElement("button");
+            button.classList.add("list-item");
+            button.textContent = group["groupName"];
+            button.addEventListener('click', () => {
+                openGroup(group)
+            })
+            groupsList.appendChild(button);
+        })
+    }
+}
+
+function openGroup(group) {
+    alert("Opening group");
+}
+
+/***************************************************
  OWNED GROUP
  ***************************************************/
+function createOwnedGroup() {
+    const ownedGroupSection = document.getElementById("ownedGroupArea");
+    document.getElementById("owned-loading").remove();
+    console.log(ownedGroup);
+    if (ownedGroup === undefined) {
+        const h3 = document.createElement("h3");
+        h3.classList.add("empty-state");
+        h3.textContent = "You do not own a group";
+        ownedGroupSection.appendChild(h3);
+    } else {
+        const h3 = document.createElement("h3");
+        h3.classList.add("group-name");
+        h3.textContent = ownedGroup["groupName"];
+        ownedGroupSection.appendChild(h3);
+
+        const button = document.createElement("button");
+        button.classList.add("manage-btn");
+        button.textContent = "Manage";
+        button.addEventListener('click', () => {
+            manageGroup()
+        })
+        ownedGroupSection.appendChild(button);
+    }
+}
+
+function manageGroup() {
+    alert("group is being managed");
+}
