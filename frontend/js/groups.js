@@ -392,6 +392,7 @@ function createOwnedGroupText() {
         // REMOVE THE CREATE GROUP BUTTON FROM THE DROPDOWN MENU
         document.getElementById("createBtn").remove();
         document.getElementById("endDateInputLabel").textContent = "Current: " + dateLabel();
+        createOwnedGroupMembers();
         const h3 = document.createElement("h3");
         h3.classList.add("group-name");
         h3.textContent = ownedGroup["groupName"];
@@ -485,7 +486,116 @@ async function updateEnd(endDate) {
     }
 }
 
-document.getElementById("deleteGroupBtn").addEventListener('click', (event) => {
+function createOwnedGroupMembers() {
+    loadGroupMembers().then((members) => {
+        createOwnedGroupMembersCards(members);
+    }).catch()
+}
+
+async function loadGroupMembers() {
+    const response = await fetch(url + "/group/info/" + ownedGroup["groupId"], {
+        method : "GET",
+        headers : {
+            "Authorization" : "Bearer " + localStorage.getItem("jwt")
+        }
+    })
+
+    if (response.ok) {
+        const responseInfo = await response.json();
+        return responseInfo["members"];
+    } else if (response.status === 401) {
+        alert("You need to sign in again");
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+    } else {
+        alert("Something went wrong, try again");
+        throw new Error("Something went wrong");
+    }
+}
+
+function createOwnedGroupMembersCards(members) {
+    const memberContainer = document.getElementById("memberList");
+    if (members.length === 1) {
+        const h3 = document.createElement("h3");
+        h3.classList.add("empty-state");
+        h3.textContent = "No current members";
+        memberContainer.appendChild(h3);
+    } else {
+        members.forEach( function (member) {
+            if (member["userName"] !== ownedGroup["groupOwnerUserName"]) {
+                // create the div that holds the invite and add the class to it
+                const memberDiv = document.createElement("div");
+                memberDiv.classList.add("list-item");
+
+                // create the div that holds the group name
+                const innerDiv = document.createElement("div");
+                innerDiv.classList.add("member-info");
+
+                // create the h3 of the group name
+                const h3 = document.createElement("h3");
+                h3.textContent = member["userName"];
+                innerDiv.appendChild(h3);
+
+                // append this inner div to the main invite div
+                memberDiv.appendChild(innerDiv)
+
+                // create div to hold buttons
+                const buttonDiv = document.createElement("div")
+                buttonDiv.classList.add("member-actions")
+
+                //create the accept button
+                const removeBtn = document.createElement("button")
+                removeBtn.textContent = "Remove";
+                removeBtn.classList.add("decline-btn");
+                removeBtn.addEventListener('click', function () {
+                    removeBtn.disabled = true;
+                    removeMember(member["userName"]).then(() => {
+                        memberDiv.remove();
+                        removeBtn.disabled = false;
+                        const h3 = document.createElement("h3");
+                        h3.classList.add("empty-state");
+                        h3.textContent = "No current members";
+                        memberContainer.appendChild(h3);
+                    }).catch(() => {
+                        removeBtn.disabled = false;
+                    })
+                })
+                buttonDiv.appendChild(removeBtn);
+
+                // append button div to invite div
+                memberDiv.appendChild(buttonDiv);
+
+                //append invite div to parent
+                memberContainer.appendChild(memberDiv);
+            }
+        })
+    }
+}
+
+async function removeMember(memberUserName) {
+    const response = await fetch(url + "/group/remove-user/" + memberUserName, {
+        method : "PUT",
+        headers : {
+            "Authorization" : "Bearer " + localStorage.getItem("jwt")
+        }
+    })
+
+    if (response.ok) {
+        const responseInfo = await response.json();
+        alert(responseInfo["Message"]);
+    } else if (response.status === 401) {
+        alert("You need to sign in again");
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+    } else {
+        alert("Something went wrong, try again");
+        throw new Error("Something went wrong");
+    }
+}
+
+document.getElementById("deleteGroupBtn").addEventListener('click', () => {
     const buttonClicked = document.getElementById("deleteGroupBtn")
     buttonClicked.disabled = true;
     const confirm = window.confirm("Are you sure you want to delete your group?");
