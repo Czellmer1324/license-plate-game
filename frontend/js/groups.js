@@ -30,9 +30,13 @@ document.getElementById("logOutBtn").addEventListener("click", function () {
 const modal = document.getElementById("createGroupModal");
 
 document.getElementById("createBtn").addEventListener("click", () => {
+    createBtnActions();
+})
+
+function createBtnActions() {
     document.getElementById("dropdownLinks").classList.remove("show");
     modal.classList.add("show");
-})
+}
 
 document.getElementById("cancelCreateGroup").addEventListener("click", () => {
     modal.classList.remove("show");
@@ -57,9 +61,16 @@ document.getElementById("createGroupForm").addEventListener('submit', (event)=> 
     buttonClicked.disabled = true;
     const groupName = document.getElementById("groupName").value;
     const date = document.getElementById("endDate").value;
-    console.log(groupName);
-    console.log(date);
-    createGroupForUser(groupName, date).then((group) => {
+
+    let formatedDate;
+
+    if (date === "") {
+        formatedDate = date;
+    } else {
+        formatedDate = formatDate(date);
+    }
+
+    createGroupForUser(groupName, formatedDate).then((group) => {
         // should probably make it so that the group returns everything
         ownedGroup = group;
         addGroup(group);
@@ -68,6 +79,16 @@ document.getElementById("createGroupForm").addEventListener('submit', (event)=> 
         modal.classList.remove("show");
     }).catch()
 })
+
+function formatDate(date) {
+    const offsetInMinutes = -(new Date().getTimezoneOffset());
+    const sign = offsetInMinutes >= 0 ? "+" : "-";
+    const hours = String(Math.floor(Math.abs(offsetInMinutes) / 60)).padStart(2, "0");
+    const minutes = String(Math.abs(offsetInMinutes) % 60).padStart(2, "0");
+    const offset = sign + hours + ":" + minutes;
+
+    return (date + "T23:59:59.999" + offset);
+}
 
 /***************************************************
  INVITES
@@ -370,14 +391,7 @@ function createOwnedGroupText() {
     } else {
         // REMOVE THE CREATE GROUP BUTTON FROM THE DROPDOWN MENU
         document.getElementById("createBtn").remove();
-        let endDate;
-        if (ownedGroup["endDate"] === null) {
-            endDate = "None";
-        } else {
-            const utcDate = new Date(ownedGroup["endDate"]);
-            endDate = utcDate.toLocaleString();
-        }
-        document.getElementById("endDateInputLabel").textContent = "Current: " + endDate;
+        document.getElementById("endDateInputLabel").textContent = "Current: " + dateLabel();
         const h3 = document.createElement("h3");
         h3.classList.add("group-name");
         h3.textContent = ownedGroup["groupName"];
@@ -390,6 +404,15 @@ function createOwnedGroupText() {
             manageGroup()
         })
         ownedGroupSection.appendChild(button);
+    }
+}
+
+function dateLabel() {
+    if (ownedGroup["endDate"] === null) {
+        return  "None";
+    } else {
+        const utcDate = new Date(ownedGroup["endDate"]);
+        return utcDate.toLocaleString();
     }
 }
 
@@ -408,12 +431,58 @@ function manageGroup() {
 document.getElementById("closeManageBtn").addEventListener("click", closeManageGroup);
 
 document.getElementById("updateEndDateBtn").addEventListener('click', () => {
+    const buttonClicked = document.getElementById("updateEndDateBtn");
+    buttonClicked.disabled = true;
     const endDate = document.getElementById("endDateInput").value;
-    console.log(endDate);
+    let formattedDate;
+    if (endDate === "") {
+        formattedDate = endDate;
+    } else {
+        formattedDate = formatDate(endDate);
+    }
+    const currentEnd = new Date(ownedGroup["endDate"]).toUTCString()
+
+    if (new Date(formattedDate).toUTCString() === currentEnd) {
+        alert("End date updated");
+        document.getElementById("endDateInput").value = "";
+        buttonClicked.disabled = false;
+        return
+    }
+    updateEnd(formattedDate).then((newDate) => {
+        document.getElementById("endDateInput").value = "";
+        ownedGroup["endDate"] = newDate;
+        document.getElementById("endDateInputLabel").textContent = "Current: " + dateLabel();
+    }).catch()
+
+    buttonClicked.disabled = false;
 })
 
 async function updateEnd(endDate) {
+    const requestObj = {
+        "newDate" : endDate
+    }
+    const response = await fetch(url + "/group/update-end", {
+        method : "PUT",
+        headers : {
+            'Authorization' : 'Bearer ' + localStorage.getItem('jwt'),
+            'Content-Type': 'application/json'
+        },
+        body : JSON.stringify(requestObj)
+    })
 
+    if (response.ok) {
+        const responseInfo = await response.json();
+        alert(responseInfo["Message"]);
+        return responseInfo["NewDate"];
+    } else if (response.status === 401) {
+        alert("You need to sign in again");
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+    } else {
+        alert("Something went wrong, try again");
+        throw new Error("Something went wrong");
+    }
 }
 
 document.getElementById("deleteGroupBtn").addEventListener('click', (event) => {
@@ -426,6 +495,14 @@ document.getElementById("deleteGroupBtn").addEventListener('click', (event) => {
             ownedGroup = undefined;
             createGroups();
             removeOwnedGroupFromScreen();
+            const dropDown = document.getElementById("dropdownLinks");
+            const createBtn = document.createElement("button");
+            createBtn.id = "createBtn";
+            createBtn.textContent = "Create Group";
+            createBtn.addEventListener('click', () => {
+                createBtnActions();
+            })
+            dropDown.appendChild(createBtn);
             buttonClicked.disabled = false;
             closeManageGroup();
         }).catch()

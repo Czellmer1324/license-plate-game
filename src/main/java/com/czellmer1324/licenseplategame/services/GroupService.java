@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -138,7 +135,10 @@ public class GroupService {
 
         try {
             groupRepository.save(group);
-            return new ServiceResponse(Map.of("Message", "End date updated"), HttpStatus.OK);
+            Map<String, Object> response = new HashMap<>();
+            response.put("Message", "End date updated");
+            response.put("NewDate", newDate);
+            return new ServiceResponse(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ServiceResponse(Map.of("Message", "Something went wrong please try again"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
