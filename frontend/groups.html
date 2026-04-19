@@ -90,6 +90,54 @@
             </div>
         </div>
 
+        <div id="manageGroupModal" class="modal-overlay">
+            <div class="modal-card">
+
+                <h2 id="manageGroupTitle">Manage Group</h2>
+
+                <p class="modal-subtitle" id="manageGroupSubtitle">
+                    Group settings and members
+                </p>
+
+                <!-- ================= END DATE ================= -->
+                <div class="section-block">
+                    <h3>Update End Date</h3>
+
+                    <label for="endDateInput" id="endDateInputLabel"></label>
+                    <input type="date" id="endDateInput">
+
+                    <button id="updateEndDateBtn" class="primary-btn">
+                        Update End Date
+                    </button>
+                </div>
+
+                <!-- ================= MEMBERS ================= -->
+                <div class="section-block">
+                    <h3>Members</h3>
+
+                    <div id="memberList" class="scrollable-list">
+
+                    </div>
+                </div>
+
+                <!-- ================= DANGER ZONE ================= -->
+                <div class="section-block danger-zone">
+                    <h3>Danger Zone</h3>
+
+                    <button id="deleteGroupBtn" class="danger-btn">
+                        Delete Group
+                    </button>
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="closeManageBtn" class="secondary-btn">
+                        Close
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
         <script src="./js/groups.js"></script>
 
     </body>

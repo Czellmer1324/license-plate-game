@@ -266,7 +266,7 @@ async function loadGroups() {
 
 function createGroups() {
     const groupsList = document.getElementById("memberGroupsList");
-    document.getElementById("groups-loading").remove();
+    groupsList.replaceChildren();
     console.log()
     if (groups.length === 0) {
         const h3 = document.createElement("h3");
@@ -281,7 +281,7 @@ function createGroups() {
             }
             const button = document.createElement("button");
             button.classList.add("list-item");
-            button.textContent = group["groupName"];
+            button.textContent = group["groupName"] + " by " + group["groupOwnerUserName"];
             button.addEventListener('click', () => {
                 openGroup(group)
             })
@@ -310,6 +310,7 @@ function openGroup(group) {
 }
 
 async function createGroupForUser(groupName, endDate) {
+
     const requestObj = {
         "groupName" : groupName,
         "endDate" : endDate
@@ -335,7 +336,7 @@ async function createGroupForUser(groupName, endDate) {
         window.location.replace("index.html");
         throw new Error("Unauthorized");
     } else {
-        alert("Something went wrong, try reloading page.");
+        alert("Something went wrong, try again");
         throw new Error("Something went wrong");
     }
 }
@@ -353,6 +354,11 @@ function updateOwnedGroup() {
     createOwnedGroupText();
 }
 
+function removeOwnedGroupFromScreen() {
+    document.getElementById("ownedGroupArea").replaceChildren();
+    createOwnedGroupText();
+}
+
 function createOwnedGroupText() {
     const ownedGroupSection = document.getElementById("ownedGroupArea");
     if (ownedGroup === undefined) {
@@ -364,6 +370,14 @@ function createOwnedGroupText() {
     } else {
         // REMOVE THE CREATE GROUP BUTTON FROM THE DROPDOWN MENU
         document.getElementById("createBtn").remove();
+        let endDate;
+        if (ownedGroup["endDate"] === null) {
+            endDate = "None";
+        } else {
+            const utcDate = new Date(ownedGroup["endDate"]);
+            endDate = utcDate.toLocaleString();
+        }
+        document.getElementById("endDateInputLabel").textContent = "Current: " + endDate;
         const h3 = document.createElement("h3");
         h3.classList.add("group-name");
         h3.textContent = ownedGroup["groupName"];
@@ -379,6 +393,63 @@ function createOwnedGroupText() {
     }
 }
 
+function openManageGroup() {
+    document.getElementById("manageGroupModal").classList.add("show");
+}
+
+function closeManageGroup() {
+    document.getElementById("manageGroupModal").classList.remove("show");
+}
+
 function manageGroup() {
-    alert("group is being managed");
+    openManageGroup();
+}
+
+document.getElementById("closeManageBtn").addEventListener("click", closeManageGroup);
+
+document.getElementById("updateEndDateBtn").addEventListener('click', () => {
+    const endDate = document.getElementById("endDateInput").value;
+    console.log(endDate);
+})
+
+async function updateEnd(endDate) {
+
+}
+
+document.getElementById("deleteGroupBtn").addEventListener('click', (event) => {
+    const buttonClicked = document.getElementById("deleteGroupBtn")
+    buttonClicked.disabled = true;
+    const confirm = window.confirm("Are you sure you want to delete your group?");
+    if (confirm) {
+        deleteGroup().then(() => {
+            groups = groups.filter(i => i["groupId"] !== ownedGroup["groupId"]);
+            ownedGroup = undefined;
+            createGroups();
+            removeOwnedGroupFromScreen();
+            buttonClicked.disabled = false;
+            closeManageGroup();
+        }).catch()
+    }
+})
+
+async function deleteGroup() {
+    const response = await fetch(url + "/group/delete", {
+        method : 'DELETE',
+        headers: {
+            'Authorization' : 'Bearer ' + localStorage.getItem('jwt')
+        }
+    })
+
+    if (response.ok) {
+        const message = await response.json();
+        alert(message["Message"]);
+    } else if (response.status === 401) {
+        alert("You need to sign in again");
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+    } else {
+        alert("Something went wrong, try again");
+        throw new Error("Something went wrong");
+    }
 }
