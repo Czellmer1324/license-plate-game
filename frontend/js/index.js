@@ -34,6 +34,24 @@ signInForm.onsubmit  = function(event) {
     });
 }
 
+document.querySelectorAll(".toggle-password").forEach(button => {
+    button.addEventListener('click', () => {
+        const inputId = button.dataset.target;
+        const input = document.getElementById(inputId);
+        const eye = button.children[0];
+
+        if (input.type === "password") {
+            input.type = "text";
+            eye.classList.remove("fa-eye");
+            eye.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            eye.classList.remove("fa-eye-slash");
+            eye.classList.add("fa-eye");
+        }
+    })
+})
+
 signUpForm.onsubmit = function(event) {
     event.preventDefault();
     const createBtn = document.getElementById("createActSubmitBtn");

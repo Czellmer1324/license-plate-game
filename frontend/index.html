@@ -6,6 +6,8 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="./css/index.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     </head>
     <body>
         <main>
@@ -22,9 +24,19 @@
                             <input type="text" id="email" placeholder="&#128231; Enter your email">
                         </div>
 
-                        <div class="inputField">
+                        <div class="inputField password-wrapper">
                             <label for="password">Password</label>
-                            <input type="password" id="password" placeholder="&#128274; Enter your password">
+                            <div class="password-container">
+                                <input type="password" id="password" placeholder="&#128274; Enter your password">
+                                <button
+                                        type="button"
+                                        class="toggle-password"
+                                        data-target="password"
+                                        aria-label="Show password"
+                                >
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
                         </div>
                         <button type="submit" id="signInBtn">Sign In</button>
                     </form>
@@ -62,14 +74,34 @@
                                 <input type="text" id="lastName" placeholder="&#128100; Enter your last name">
                             </div>
 
-                            <div class="inputField">
+                            <div class="inputField password-wrapper">
                                 <label for="createPassword">Password</label>
-                                <input type="password" id="createPassword" placeholder="&#128274; Create a password">
+                                <div class = "password-container">
+                                    <input type="password" id="createPassword" placeholder="&#128274; Create a password">
+                                    <button
+                                            type="button"
+                                            class="toggle-password"
+                                            data-target="createPassword"
+                                            aria-label="Show password"
+                                    >
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
 
-                            <div class="inputField">
+                            <div class="inputField password-wrapper">
                                 <label for="confirmPassword">Confirm password</label>
-                                <input type="password" id="confirmPassword" placeholder="&#128274; Confirm your password">
+                                <div class="password-container">
+                                    <input type="password" id="confirmPassword" placeholder="&#128274; Confirm your password">
+                                    <button
+                                            type="button"
+                                            class="toggle-password"
+                                            data-target="confirmPassword"
+                                            aria-label="Show password"
+                                    >
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                             <button type="submit" id="createActSubmitBtn">Create Account</button>
                         </form>

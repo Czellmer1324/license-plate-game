@@ -158,7 +158,7 @@ input:focus {
 /* =========================
    BUTTONS (match game page style)
 ========================= */
-button {
+button:not(.toggle-password){
     width: 100%;
     margin-top: 0.75rem;
 
@@ -175,12 +175,12 @@ button {
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-button:active {
+button:active:not(.toggle-password) {
     transform: scale(0.98);
 }
 
 #signInBtn,
-#signUpForm button,
+#signUpForm button:not(.toggle-password),
 #signUpBtn {
     background: #3b82f6;
     color: white;
@@ -189,7 +189,7 @@ button:active {
 }
 
 #signInBtn:hover,
-#signUpForm button:hover,
+#signUpForm button:hover:not(.toggle-password),
 #signUpBtn:hover {
     background: #2563eb;
     transform: translateY(-1px);
@@ -329,4 +329,75 @@ button:active {
 #noAccount {
     text-align: center;
     margin-top: 1rem;
+}
+
+/* =========================
+   PASSWORD TOGGLE — FINAL FIX
+========================= */
+
+.password-container {
+    position: relative;
+}
+
+.password-container input {
+    padding-right: 44px;
+}
+
+/* Fully override global button styles */
+
+.password-container .toggle-password {
+    position: absolute;
+
+    top: 50%;
+    right: 10px;
+
+    transform: translateY(-50%);
+
+    width: 32px;
+    height: 32px;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+    border: none;
+
+    cursor: pointer;
+
+    box-shadow: none;
+}
+
+/* Prevent movement on click */
+
+.password-container .toggle-password:active {
+    transform: translateY(-50%);
+}
+
+/* Remove blue focus styling */
+
+.password-container .toggle-password:focus {
+    outline: none;
+}
+
+/* Optional nicer focus for accessibility */
+
+.password-container .toggle-password:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.4);
+    border-radius: 50%;
+}
+
+/* Style the icon itself */
+
+.password-container .toggle-password i {
+    font-size: 0.95rem;
+    color: #555;
+    pointer-events: none;
+}
+
+.password-container .toggle-password:hover i {
+    color: #111;
 }
