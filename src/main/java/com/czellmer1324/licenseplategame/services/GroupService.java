@@ -114,7 +114,7 @@ public class GroupService {
         List<User> members = group.getMembers();
 
         // convert the group to DTO so that it protects users sensitive info
-        GetGroupDTO safeReturn = new GetGroupDTO(group.getGroupName(), new ArrayList<>(), group.getEndDate(), groupId);
+        GetGroupDTO safeReturn = new GetGroupDTO(group.getGroupName(), group.getGroupOwner().getUserName(), new ArrayList<>(), group.getEndDate(), groupId);
 
         for (User member : members) {
             safeReturn.members().add(new SafeUserDTO(member.getUserName(), member.getUserId(), member.getNumFound()));

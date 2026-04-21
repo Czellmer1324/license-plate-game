@@ -327,7 +327,8 @@ function addGroup(groupJoined) {
 }
 
 function openGroup(group) {
-    alert("Opening group");
+    localStorage.setItem("group", JSON.stringify(group));
+    window.location.assign("group.html");
 }
 
 async function createGroupForUser(groupName, endDate) {

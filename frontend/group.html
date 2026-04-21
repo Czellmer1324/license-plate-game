@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Details</title>
+
+    <link rel="stylesheet" href="./css/group.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="topInfo">
+
+        <!-- LEFT / CENTER USER INFO -->
+        <div class="centerInfo">
+            <p id="displayUserName">UserName</p>
+        </div>
+
+        <!-- DROPDOWN -->
+        <div class="dropdown">
+            <button class="dropbtn" id="dropDownBtn">
+                Menu <span class="arrow">▾</span>
+            </button>
+
+            <div id="dropdownLinks" class="dropdown-content">
+                <button id="homeBtn">Home</button>
+                <button id="logOutBtn">Logout</button>
+                <button id="groupsBtn">Groups</button>
+            </div>
+        </div>
+
+    </div>
+
+</header>
+
+<main class="main-layout">
+
+    <!-- =========================
+         GROUP TITLE + COUNTDOWN
+    ========================== -->
+
+    <section class="group-header-panel">
+
+        <h1 id="groupName">
+            Group Name
+        </h1>
+
+        <div class="countdown-container">
+
+            <p class="countdown-label">
+                Time Remaining
+            </p>
+
+            <div id="countdownTimer" class="countdown">
+
+                <span id="days">0</span>
+                <span class="time-label">Days</span>
+
+                <span id="hours">0</span>
+                <span class="time-label">Hours</span>
+
+                <span id="minutes">0</span>
+                <span class="time-label">Minutes</span>
+
+                <span id="seconds">0</span>
+                <span class="time-label">Seconds</span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         MEMBER LIST
+    ========================== -->
+
+    <section class="member-panel">
+
+        <h2>
+            Members
+        </h2>
+
+        <div id="memberList" class="member-list">
+
+        </div>
+
+    </section>
+
+    <section class="danger-panel" id="dangerPanel">
+
+        <h2>Leave Group</h2>
+
+        <p class="danger-text">
+            Leaving this group will remove you from the members list.
+        </p>
+
+        <button id="leaveGroupBtn" class="leave-btn">
+            Leave Group
+        </button>
+
+    </section>
+
+    <script src="./js/group.js"></script>
+
+</main>
+
+</body>
+</html>
