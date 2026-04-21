@@ -20,12 +20,38 @@ document.getElementById("topBackSign").addEventListener('click', function() {
 
 signInForm.onsubmit  = function(event) {
     event.preventDefault();
-    signIn();
+    const signInBtn = document.getElementById("signInBtn");
+    signInBtn.disabled = true;
+    signIn().then(()=> {
+        getUserInfo().then(() => {
+            signInBtn.disabled = false;
+            window.location.replace("game.html")
+        }).catch(() => {
+            signInBtn.disabled = false;
+        });
+    }).catch(() => {
+        signInBtn.disabled = false;
+    });
 }
 
 signUpForm.onsubmit = function(event) {
     event.preventDefault();
-    createAccount();
+    const createBtn = document.getElementById("createActSubmitBtn");
+    createBtn.disabled = true;
+    createAccount().then(() => {
+        document.getElementById("createEmail").value = "";
+        document.getElementById("createUserName").value = "";
+        document.getElementById("firstName").value = "";
+        document.getElementById("lastName").value = "";
+        document.getElementById("createPassword").value = "";
+        document.getElementById("confirmPassword").value = "";
+
+        document.getElementById("hidden").classList.remove("show");
+        document.getElementById("signInDiv").classList.remove("signup-active");
+        createBtn.disabled = false;
+    }).catch(() => {
+        createBtn.disabled = false;
+    });
 }
 
 async function signIn() {
@@ -42,50 +68,40 @@ async function signIn() {
         "password": password
     };
 
-    try {
-        const response = await fetch(url + "/login", {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(obj)
-        });
+    const response = await fetch(url + "/login", {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(obj)
+    });
 
-        if (response.ok) {
-            // save the returned jwt
-            // send them to the game page
-            const data = await response.json();
-            const key = data["Token"];
+    if (response.ok) {
+        // save the returned jwt
+        // send them to the game page
+        const data = await response.json();
+        const key = data["Token"];
 
-            localStorage.setItem("jwt", key);
-            // need to get user data and store it, then move to next page
-            await getUserInfo();
-            window.location.replace("game.html")
-        } else {
-            const data = await response.json();
-            if (response.status === 401) {
-                alert(data["Message"]);
-            }
+        localStorage.setItem("jwt", key);
+    } else {
+        const data = await response.json();
+        if (response.status === 401) {
+            alert(data["Message"]);
         }
-
-    } catch (error) {
-        console.error("Caught error:", error.message);
+        throw new Error("Something went wrong")
     }
-
-
 }
 
 async function getUserInfo() {
-    try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {'Authorization': "Bearer " + localStorage.getItem("jwt")}
-        })
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {'Authorization': "Bearer " + localStorage.getItem("jwt")}
+    })
 
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem("userInfo", JSON.stringify(data));
-        }
-    } catch (error) {
-        console.log(error.message);
+    if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("userInfo", JSON.stringify(data));
+    } else {
+        alert("Something went wrong try signing in again");
+        throw new Error("Something went wrong");
     }
 }
 
@@ -119,46 +135,32 @@ async function createAccount() {
         "password": password
     };
 
-    try {
-        const response = await fetch(url + "/create", {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(obj)
-        });
+    const response = await fetch(url + "/create", {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(obj)
+    });
 
-        if (response.ok) {
+    if (response.ok) {
+        const data = await response.json();
+        const message = data["Message"];
+
+        alert(message);
+    } else {
+        if (response.status === 409) {
             const data = await response.json();
             const message = data["Message"];
 
-            document.getElementById("createEmail").value = "";
-            document.getElementById("createUserName").value = "";
-            document.getElementById("firstName").value = "";
-            document.getElementById("lastName").value = "";
-            document.getElementById("createPassword").value = "";
-            document.getElementById("confirmPassword").value = "";
-
-            document.getElementById("hidden").classList.remove("show");
-            document.getElementById("signInDiv").classList.remove("signup-active");
-
-            alert(message);
-        } else {
-            if (response.status === 409) {
-                const data = await response.json();
-                const message = data["Message"];
-
-                if (message === "User name already exists") {
-                    document.getElementById("createUserName").value = "";
-                    alert("User name is already taken, please select a new one");
-                } else {
-                    document.getElementById("createEmail").value = "";
-                    alert("There is already an email with this account, please log into that one");
-                }
-            } else if (response.status === 500) {
-                alert("There was an error trying to create your account please try again in a few moments");
+            if (message === "User name already exists") {
+                document.getElementById("createUserName").value = "";
+                alert("User name is already taken, please select a new one");
+            } else {
+                document.getElementById("createEmail").value = "";
+                alert("There is already an email with this account, please log into that one");
             }
+        } else if (response.status === 500) {
+            alert("There was an error trying to create your account please try again in a few moments");
         }
-    } catch (error) {
-        console.error("Caught error:", error.message);
     }
     
 }

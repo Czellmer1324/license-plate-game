@@ -71,6 +71,8 @@ document.getElementById("logOutBtn").addEventListener("click", function () {
 document.getElementById("clearAllBtn").addEventListener("click", function () {
     const userConfirmed = window.confirm("Do you really want to clear all marked states?");
     if (userConfirmed) {
+        const buttonClicked = document.getElementById("clearAllBtn");
+        buttonClicked.disabled = true;
         clearAllMarkedStates().then(function () {
             // clear the found storage.
             found.clear();
@@ -85,10 +87,13 @@ document.getElementById("clearAllBtn").addEventListener("click", function () {
                 }
             });
 
+            buttonClicked.disabled = false;
             updateStateCount();
             // remove all found from the list
             // update found amount at the top
-        }).catch()
+        }).catch( () => {
+            buttonClicked.disabled = false;
+        })
     }
 })
 
@@ -126,40 +131,44 @@ async function clearAllMarkedStates() {
     } else {
         if (response.status === 401) {
             alert("you need to log in again!");
+            localStorage.clear();
             window.location.replace("index.html");
+            throw new Error("Unauthorized");
         } else {
             alert("something went wrong please try again");
+            throw new Error("Something went wrong");
         }
     }
 }
 
-async function createStateList() {
-    await getUserFoundStates();
-    const ul = document.getElementById("stateList")
-    states.forEach (function(value, key) {
-        const button = document.createElement("button");
-        const li = document.createElement("li");
-        li.textContent = key;
+function createStateList() {
+    getUserFoundStates().then(() => {
+        const ul = document.getElementById("stateList")
+        states.forEach (function(value, key) {
+            const button = document.createElement("button");
+            const li = document.createElement("li");
+            li.textContent = key;
 
-        button.appendChild(li);
-        button.classList.add("stateButton");
-        button.id = key;
-        button.addEventListener("click", () => {
-            stateClick(button.id)
-        })
+            button.appendChild(li);
+            button.classList.add("stateButton");
+            button.id = key;
+            button.addEventListener("click", () => {
+                stateClick(button.id)
+            })
 
-        if (found.has(value)) {
-            button.classList.add("found");
-            const mapPath = document.querySelector('[data-id="' + value + '"]');
-            mapPath.classList.add("mapFound");
-        } else {
-            button.classList.add("notFound");
-        }
-        
-        ul.appendChild(button);
-    });
+            if (found.has(value)) {
+                button.classList.add("found");
+                const mapPath = document.querySelector('[data-id="' + value + '"]');
+                mapPath.classList.add("mapFound");
+            } else {
+                button.classList.add("notFound");
+            }
 
-    updateStateCount();
+            ul.appendChild(button);
+        });
+
+        updateStateCount();
+    })
 }
 
 function stateClick(id) {
@@ -172,13 +181,17 @@ function stateClick(id) {
             function () {
                 buttonClicked.disabled = false;
             }
-        );
+        ).catch(() => {
+            buttonClicked.disabled = false;
+        });
     } else {
         unmarkState(stateCode, buttonClicked).then(
             function () {
                 buttonClicked.disabled = false;
             }
-        );
+        ).catch(() => {
+            buttonClicked.disabled = false;
+        });
     }
 }
 
@@ -206,9 +219,12 @@ async function unmarkState(stateCode, button) {
     } else {
         if (response.status === 401) {
             alert("you need to log in again!");
+            localStorage.clear();
             window.location.replace("index.html");
+            throw new Error("Unauthorized");
         } else {
             alert("something went wrong please try again");
+            throw new Error("Something went wrong");
         }
     }
 }
@@ -241,9 +257,12 @@ async function markState(stateCode, button) {
     } else {
         if (response.status === 401) {
             alert("you need to log in again!");
+            localStorage.clear();
             window.location.replace("index.html");
+            throw new Error("unauthorized");
         } else {
             alert("something went wrong please try again");
+            throw new Error("Something went wrong");
         }
     }
 }
@@ -264,6 +283,7 @@ async function getUserFoundStates() {
 
     } else {
         alert("You need to sign in again!");
+        localStorage.clear();
         window.location.replace("index.html");
     }
 }

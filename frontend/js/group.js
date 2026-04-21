@@ -41,7 +41,6 @@ window.addEventListener("load", function() {
     document.getElementById("displayUserName").textContent = userName;
     loadGroupInfo(groupInfo).then((group) => {
         currentGroup = group;
-        console.log(currentGroup);
         if (userName === currentGroup["groupOwnerUserName"]) {
             document.getElementById("dangerPanel").remove();
         } else {

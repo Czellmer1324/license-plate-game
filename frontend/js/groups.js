@@ -77,7 +77,9 @@ document.getElementById("createGroupForm").addEventListener('submit', (event)=> 
         updateOwnedGroup();
         buttonClicked.disabled = false;
         modal.classList.remove("show");
-    }).catch()
+    }).catch(() => {
+        buttonClicked.disabled = false;
+    })
 })
 
 function formatDate(date) {
@@ -617,7 +619,9 @@ document.getElementById("deleteGroupBtn").addEventListener('click', () => {
             buttonClicked.disabled = false;
             document.getElementById("memberList").replaceChildren();
             closeManageGroup();
-        }).catch()
+        }).catch(() => {
+            buttonClicked.disabled = false;
+        })
     }
 })
 

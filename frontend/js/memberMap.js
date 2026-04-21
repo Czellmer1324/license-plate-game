@@ -46,7 +46,6 @@ const found = [];
 foundList.forEach((state) => {
     found.push(state["stateCode"]);
 })
-console.log(found);
 
 const states = new Map([
     ["Arizona", 'AZ'],
