@@ -120,7 +120,20 @@ function createMemberCards() {
 
             // add the event listener
             button.addEventListener('click', () => {
-                alert("I was clicked");
+                button.disabled = true;
+                loadMemberInfo(member["userId"]).then( (memberStates)=> {
+                    const memberInfo = {
+                        "userName" : member["userName"],
+                        "statesFound" : member["numFound"],
+                        "statesFoundList" : memberStates
+                    }
+
+                    localStorage.setItem("memberInfo", JSON.stringify(memberInfo));
+                    button.disabled = false;
+                    window.location.assign("memberMap.html")
+                }).catch( ()=> {
+                    button.disabled = false;
+                })
             })
 
             memberList.appendChild(button);
@@ -131,6 +144,27 @@ function createMemberCards() {
         const h3 = document.createElement("h3");
         h3.textContent = "No current members";
         memberList.appendChild(h3);
+    }
+}
+
+async function loadMemberInfo(memberId) {
+    const response = await fetch(url + "/group/member-map/" + memberId + "/" + currentGroup["groupId"], {
+        method : "GET",
+        headers : {
+            "Authorization" : "Bearer " + localStorage.getItem("jwt")
+        }
+    })
+
+    if (response.ok) {
+        return await response.json();
+    } else if (response.status === 401) {
+        alert("You need to sign in again");
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+    } else {
+        alert("Something went wrong try again");
+        throw new Error("Something went wrong");
     }
 }
 
