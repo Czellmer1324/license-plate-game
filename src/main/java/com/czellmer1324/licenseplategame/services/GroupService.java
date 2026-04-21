@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +30,9 @@ public class GroupService {
 
         try {
             Group group = new Group(groupDTO.groupName(), user, List.of(user), groupDTO.endDate());
-            groupRepository.save(group);
-            return new ServiceResponse(Map.of("Message", "Group created successfully"), HttpStatus.CREATED);
+            Group savedGroup = groupRepository.save(group);
+            GetGroupsDTO groupReturn = new GetGroupsDTO(savedGroup.getGroupName(), user.getUserName(), savedGroup.getGroupId(), savedGroup.getEndDate());
+            return new ServiceResponse(Map.of("Message", "Group created successfully", "Group", groupReturn), HttpStatus.CREATED);
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             return new ServiceResponse(Map.of("Message", "User already owns a group"), HttpStatus.CONFLICT);
         } catch (Exception e) {
@@ -57,7 +55,9 @@ public class GroupService {
         }
 
         try {
-            groupRepository.delete(opGroup.get());
+            Group group = opGroup.get();
+            inviteService.deleteAllByGroupId(group.getGroupId());
+            groupRepository.deleteById(group.getGroupId());
             return new ServiceResponse(Map.of("Message", "Group delete successfully"), HttpStatus.OK);
         } catch (Exception e) {
             return new ServiceResponse(Map.of("Message", "Something went wrong, try again"), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -82,7 +82,7 @@ public class GroupService {
         // make sure the user they are trying to invite exists
         Optional<User> opInvitee = userService.getUserByUserName(inviteDTO.userName());
         if (opInvitee.isEmpty())
-            return new ServiceResponse(Map.of("Message", "This user does not exist"), HttpStatus.BAD_REQUEST);
+            return new ServiceResponse(Map.of("Message", "This user does not exist"), HttpStatus.NOT_FOUND);
         // check to make sure the user is not already part of the group
         if (group.getMembers().contains(opInvitee.get()))
             return new ServiceResponse(Map.of("Message", "User is already a part of this group"), HttpStatus.CONFLICT);
@@ -114,7 +114,7 @@ public class GroupService {
         List<User> members = group.getMembers();
 
         // convert the group to DTO so that it protects users sensitive info
-        GetGroupDTO safeReturn = new GetGroupDTO(group.getGroupName(), new ArrayList<>(), group.getEndDate(), groupId);
+        GetGroupDTO safeReturn = new GetGroupDTO(group.getGroupName(), group.getGroupOwner().getUserName(), new ArrayList<>(), group.getEndDate(), groupId);
 
         for (User member : members) {
             safeReturn.members().add(new SafeUserDTO(member.getUserName(), member.getUserId(), member.getNumFound()));
@@ -137,7 +137,10 @@ public class GroupService {
 
         try {
             groupRepository.save(group);
-            return new ServiceResponse(Map.of("Message", "End date updated"), HttpStatus.OK);
+            Map<String, Object> response = new HashMap<>();
+            response.put("Message", "End date updated");
+            response.put("NewDate", newDate);
+            return new ServiceResponse(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ServiceResponse(Map.of("Message", "Something went wrong please try again"), HttpStatus.INTERNAL_SERVER_ERROR);
         }

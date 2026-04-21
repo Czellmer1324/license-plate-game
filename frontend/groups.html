@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Groups</title>
+        <link rel="stylesheet" href="./css/groups.css">
+    </head>
+    <body>
+
+        <div class="dropdown">
+            <button class="dropbtn" id="dropDownBtn">
+                Menu <span class="arrow">▾</span>
+            </button>
+
+            <div id="dropdownLinks" class="dropdown-content">
+                <button id="homeBtn">Home</button>
+                <button id="logOutBtn">Logout</button>
+                <button id="createBtn">Create Group</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <h1>Your groups</h1>
+
+            <!-- ===================== INVITES SECTION ===================== -->
+            <div class="section">
+                <h2 class="section-header">Pending Invites</h2>
+
+                <div class="scrollable-list" id="invitesList">
+                    <h3 id="invite-loading">Loading...</h3>
+                </div>
+            </div>
+
+
+            <!-- ===================== MEMBER OF GROUPS ===================== -->
+            <div class="section">
+                <h2 class="section-header">Groups You're In</h2>
+
+                <div class="scrollable-list" id="memberGroupsList">
+                    <h3 id="groups-loading">Loading...</h3>
+                </div>
+            </div>
+
+
+            <!-- ===================== OWNED GROUP ===================== -->
+            <div class="section">
+                <div class="section-header">Your Group</div>
+
+                <!-- If the user owns a group -->
+                <div class="list-item" id="ownedGroupArea">
+                    <h3 id="owned-loading">Loading...</h3>
+                </div>
+
+                <!-- If the user does not own a group -->
+                <!-- <div class="empty-state">You don't own a group</div> -->
+            </div>
+
+        </div>
+
+        <!-- ===================== CREATE GROUP MODAL ===================== -->
+        <div id="createGroupModal" class="modal-overlay">
+
+            <div class="modal-card">
+
+                <h2>Create a Group</h2>
+                <p class="modal-subtitle">Start a group to track license plates together.</p>
+
+                <form id="createGroupForm">
+
+                    <div class="inputField">
+                        <label for="groupName">Group Name</label>
+                        <input type="text" id="groupName" placeholder="Enter group name" required>
+                    </div>
+
+                    <div class="inputField">
+                        <label for="endDate">Description</label>
+                        <input id="endDate" type="date">
+                    </div>
+
+                    <div class="modal-buttons">
+                        <button type="button" id="cancelCreateGroup" class="secondary-btn">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submitCreateGroup" class="primary-btn">
+                            Create Group
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="manageGroupModal" class="modal-overlay">
+            <div class="modal-card">
+
+                <h2 id="manageGroupTitle">Manage Group</h2>
+
+                <p class="modal-subtitle" id="manageGroupSubtitle">
+                    Group settings and members
+                </p>
+
+                <!-- ================= INVITE =================== -->
+                <div class="section-block">
+                    <h3>Invite members</h3>
+
+                    <label for="inviteInput">User Name</label>
+                    <input type="text" id="inviteInput" placeholder="jimbob1">
+
+                    <button id="inviteUserBtn" class="primary-btn">
+                        Invite User
+                    </button>
+                </div>
+
+                <!-- ================= END DATE ================= -->
+                <div class="section-block">
+                    <h3>Update End Date</h3>
+
+                    <label for="endDateInput" id="endDateInputLabel"></label>
+                    <input type="date" id="endDateInput">
+
+                    <button id="updateEndDateBtn" class="primary-btn">
+                        Update End Date
+                    </button>
+                </div>
+
+                <!-- ================= MEMBERS ================= -->
+                <div class="section-block">
+                    <h3>Members</h3>
+
+                    <div id="memberList" class="scrollable-list">
+
+                    </div>
+                </div>
+
+                <!-- ================= DANGER ZONE ================= -->
+                <div class="section-block danger-zone">
+                    <h3>Danger Zone</h3>
+
+                    <button id="deleteGroupBtn" class="danger-btn">
+                        Delete Group
+                    </button>
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="closeManageBtn" class="secondary-btn">
+                        Close
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <script src="./js/groups.js"></script>
+
+    </body>
+</html>

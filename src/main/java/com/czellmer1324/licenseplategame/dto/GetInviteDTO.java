@@ -1,4 +1,4 @@
 package com.czellmer1324.licenseplategame.dto;
 
-public record GetInviteDTO(String groupGroupName, String groupGroupOwnerUserName, long groupGroupId){
+public record GetInviteDTO(Long inviteId, String groupGroupName, String groupGroupOwnerUserName, long groupGroupId){
 }
