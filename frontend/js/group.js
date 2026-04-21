@@ -1,4 +1,4 @@
-const url = "http://localhost:8080";
+const url = "https://license-plate-game-backend.onrender.com";
 let currentGroup;
 let endDateSeconds;
 let userName;

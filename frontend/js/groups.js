@@ -1,4 +1,4 @@
-const url = "http://localhost:8080";
+const url = "https://license-plate-game-backend.onrender.com";
 let invites;
 let ownedGroup;
 let groups;
