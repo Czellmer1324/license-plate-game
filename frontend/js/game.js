@@ -1,4 +1,4 @@
-const url = "localhost:8080/game";
+const url = "http://localhost:8080/game";
 const found = new Map;
 const states = new Map([
     ["Arizona", 'AZ'],
@@ -59,6 +59,56 @@ window.addEventListener("load", function() {
     createStateList();
 });
 
+document.getElementById("groupButton").addEventListener("click", function () {
+    window.location.assign("groups.html");
+})
+
+document.getElementById("logOutBtn").addEventListener("click", function () {
+    localStorage.clear();
+    window.location.replace("index.html")
+})
+
+document.getElementById("clearAllBtn").addEventListener("click", function () {
+    const userConfirmed = window.confirm("Do you really want to clear all marked states?");
+    if (userConfirmed) {
+        const buttonClicked = document.getElementById("clearAllBtn");
+        buttonClicked.disabled = true;
+        clearAllMarkedStates().then(function () {
+            // clear the found storage.
+            found.clear();
+            // remove all found from the map
+            states.forEach(function (value, key) {
+                const button = document.getElementById(key);
+                const mapPath = document.querySelector('[data-id="' + value + '"]');
+                if (button.classList.contains("found")) {
+                    button.classList.remove("found");
+                    button.classList.add("notFound");
+                    mapPath.classList.remove("mapFound");
+                }
+            });
+
+            buttonClicked.disabled = false;
+            updateStateCount();
+            // remove all found from the list
+            // update found amount at the top
+        }).catch( () => {
+            buttonClicked.disabled = false;
+        })
+    }
+})
+
+document.getElementById("dropDownBtn").addEventListener("click", function (event) {
+    document.getElementById("dropdownLinks").classList.toggle("show");
+    event.stopPropagation();
+});
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+    if (!event.target.closest('.dropdown')) {
+        document.getElementById("dropdownLinks").classList.remove("show");
+    }
+}
+
 function replaceUserName() {
     const old = document.getElementById("replaceWithUser");
     const newEl = document.createElement("p");
@@ -67,43 +117,81 @@ function replaceUserName() {
     old.replaceWith(newEl);
 }
 
-async function createStateList() {
-    await getUserFoundStates();
-    const ul = document.getElementById("stateList")
-    states.forEach (function(value, key) {
-        const button = document.createElement("button");
-        const li = document.createElement("li");
-        li.textContent = key;
-
-        button.appendChild(li);
-        button.classList.add("stateButton");
-        button.id = key;
-        button.addEventListener("click", () => {
-            stateClick(button.id)
-        })
-
-        if (found.has(value)) {
-            button.classList.add("found");
-            const mapPath = document.querySelector('[data-id="' + value + '"]');
-            mapPath.classList.add("mapFound");
-        } else {
-            button.classList.add("notFound");
+async function clearAllMarkedStates() {
+    const response = await fetch(url + "/unmark-all", {
+        method: "DELETE",
+        headers: {
+            'Authorization': "Bearer " + localStorage.getItem("jwt")
         }
-        
-        ul.appendChild(button);
-    });
+    })
 
-    updateStateCount();
+    if (response.ok) {
+        const message = await response.json();
+        alert(message["Message"]);
+    } else {
+        if (response.status === 401) {
+            alert("you need to log in again!");
+            localStorage.clear();
+            window.location.replace("index.html");
+            throw new Error("Unauthorized");
+        } else {
+            alert("something went wrong please try again");
+            throw new Error("Something went wrong");
+        }
+    }
+}
+
+function createStateList() {
+    getUserFoundStates().then(() => {
+        const ul = document.getElementById("stateList")
+        states.forEach (function(value, key) {
+            const button = document.createElement("button");
+            const li = document.createElement("li");
+            li.textContent = key;
+
+            button.appendChild(li);
+            button.classList.add("stateButton");
+            button.id = key;
+            button.addEventListener("click", () => {
+                stateClick(button.id)
+            })
+
+            if (found.has(value)) {
+                button.classList.add("found");
+                const mapPath = document.querySelector('[data-id="' + value + '"]');
+                mapPath.classList.add("mapFound");
+            } else {
+                button.classList.add("notFound");
+            }
+
+            ul.appendChild(button);
+        });
+
+        updateStateCount();
+    })
 }
 
 function stateClick(id) {
     const stateCode = states.get(id);
     const buttonClicked = document.getElementById(id);
 
+    buttonClicked.disabled = true;
     if (buttonClicked.classList.contains("notFound")) {
-        markState(stateCode, buttonClicked);
+        markState(stateCode, buttonClicked).then(
+            function () {
+                buttonClicked.disabled = false;
+            }
+        ).catch(() => {
+            buttonClicked.disabled = false;
+        });
     } else {
-        unmarkState(stateCode, buttonClicked);
+        unmarkState(stateCode, buttonClicked).then(
+            function () {
+                buttonClicked.disabled = false;
+            }
+        ).catch(() => {
+            buttonClicked.disabled = false;
+        });
     }
 }
 
@@ -131,9 +219,12 @@ async function unmarkState(stateCode, button) {
     } else {
         if (response.status === 401) {
             alert("you need to log in again!");
+            localStorage.clear();
             window.location.replace("index.html");
+            throw new Error("Unauthorized");
         } else {
             alert("something went wrong please try again");
+            throw new Error("Something went wrong");
         }
     }
 }
@@ -166,9 +257,12 @@ async function markState(stateCode, button) {
     } else {
         if (response.status === 401) {
             alert("you need to log in again!");
+            localStorage.clear();
             window.location.replace("index.html");
+            throw new Error("unauthorized");
         } else {
             alert("something went wrong please try again");
+            throw new Error("Something went wrong");
         }
     }
 }
@@ -189,6 +283,7 @@ async function getUserFoundStates() {
 
     } else {
         alert("You need to sign in again!");
+        localStorage.clear();
         window.location.replace("index.html");
     }
 }
@@ -216,5 +311,4 @@ function filterStates() {
             button.classList.add("hidden");
         }
     }
-
 }

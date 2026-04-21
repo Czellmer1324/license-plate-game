@@ -1,0 +1,403 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+
+    background-image: url("../images/haberdoedas-2sH9WYvAzmU-unsplash.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    background:
+            radial-gradient(
+                    circle at center,
+                    rgba(255, 255, 255, 0.15),
+                    rgba(0, 0, 0, 0.25)
+            );
+
+    z-index: -1;
+}
+
+/* =========================
+   BACKGROUND WRAPPER
+========================= */
+
+.mainContent {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 1rem;
+}
+
+/* =========================
+   LOGIN CARD (replaces signInDiv)
+========================= */
+
+#signInDiv {
+    width: min(420px, 92vw);
+
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+
+    padding: 2rem 1.5rem;
+
+    position: relative;
+    isolation: isolate;
+
+    box-shadow:
+            0 12px 30px rgba(0, 0, 0, 0.18),
+            0 0 25px rgba(255, 255, 255, 0.25),
+            0 0 60px rgba(59, 130, 246, 0.12);
+}
+
+#signInDiv.signup-active::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 16px;
+
+    z-index: 5;
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+
+h1 {
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    text-align: center;
+    margin: 0;
+}
+
+#signInDiv h3 {
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    text-align: center;
+    margin: 1rem 0 0;
+}
+
+#signInDiv p {
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
+    text-align: center;
+    margin: 0.5rem 0;
+}
+
+#pMoreBelow {
+    margin-bottom: 1.5rem;
+}
+
+/* =========================
+   DIVIDER
+========================= */
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.divider p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 0 10px;
+}
+
+/* =========================
+   FORM INPUTS (unified style)
+========================= */
+
+label {
+    display: block;
+    text-align: left;
+    font-size: 0.9rem;
+    margin: 0.5rem 0 0.25rem;
+}
+
+input {
+    width: 100%;
+    padding: 0.75rem;
+
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+
+    font-size: 0.95rem;
+
+    outline: none;
+    transition: border 0.2s ease;
+}
+
+input:focus {
+    border-color: rgba(59, 130, 246, 0.6);
+}
+
+/* =========================
+   BUTTONS (match game page style)
+========================= */
+button:not(.toggle-password){
+    width: 100%;
+    margin-top: 0.75rem;
+
+    padding: 0.75rem;
+
+    border-radius: 999px;
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
+
+    transition: all 0.2s ease;
+
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+button:active:not(.toggle-password) {
+    transform: scale(0.98);
+}
+
+#signInBtn,
+#signUpForm button:not(.toggle-password),
+#signUpBtn {
+    background: #3b82f6;
+    color: white;
+
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);
+}
+
+#signInBtn:hover,
+#signUpForm button:hover:not(.toggle-password),
+#signUpBtn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.35);
+}
+
+/* =========================
+   SIGN UP OVERLAY (#hidden)
+========================= */
+
+#hidden {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    position: absolute;
+    inset: 0;
+
+    padding: .6rem;
+
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border-radius: 16px;
+
+    z-index: 10;
+
+    /* start hidden */
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+
+    transition: opacity 0.25s ease, transform 0.25s ease;
+
+    overflow-y: auto;
+
+    scrollbar-width: thin;              /* Firefox */
+    scrollbar-color: rgba(59,130,246,0.4) transparent;
+
+}
+
+#hidden::-webkit-scrollbar {
+    width: 6px;
+}
+
+#hidden::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#hidden::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.35);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+#hidden::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.55);
+}
+
+@media (max-width: 600px) {
+    #hidden {
+        padding: 1rem;
+    }
+}
+
+#hidden.show {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+#signUpForm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+#hidden input {
+    margin-bottom: 0.75rem;
+}
+
+#hidden h4 {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 600;
+
+    text-align: center;
+    margin: 0.25rem 0 0.25rem;
+
+    color: #1a1a1a;
+}
+
+#hidden label {
+    margin: 0.25rem 0 0.1rem;
+}
+
+#hidden input {
+    margin-bottom: 0.25rem;
+}
+
+/* =========================
+   LINKS
+========================= */
+
+.backToSign {
+    display: block;
+
+    font-size: 0.95rem;
+    font-weight: 500;
+
+    color: #3b82f6;
+
+    text-decoration: none;
+
+    margin: 0.5rem 0;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.backToSign:hover {
+    color: #2563eb;
+    text-decoration: underline;
+    transform: translateY(-1px);
+}
+
+#bottomSign {
+    text-align: center;
+}
+
+/* =========================
+   OPTIONAL: tighten spacing
+========================= */
+
+#noAccount {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+/* =========================
+   PASSWORD TOGGLE — FINAL FIX
+========================= */
+
+.password-container {
+    position: relative;
+}
+
+.password-container input {
+    padding-right: 44px;
+}
+
+/* Fully override global button styles */
+
+.password-container .toggle-password {
+    position: absolute;
+
+    top: 50%;
+    right: 10px;
+
+    transform: translateY(-50%);
+
+    width: 32px;
+    height: 32px;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+    border: none;
+
+    cursor: pointer;
+
+    box-shadow: none;
+}
+
+/* Prevent movement on click */
+
+.password-container .toggle-password:active {
+    transform: translateY(-50%);
+}
+
+/* Remove blue focus styling */
+
+.password-container .toggle-password:focus {
+    outline: none;
+}
+
+/* Optional nicer focus for accessibility */
+
+.password-container .toggle-password:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.4);
+    border-radius: 50%;
+}
+
+/* Style the icon itself */
+
+.password-container .toggle-password i {
+    font-size: 0.95rem;
+    color: #555;
+    pointer-events: none;
+}
+
+.password-container .toggle-password:hover i {
+    color: #111;
+}

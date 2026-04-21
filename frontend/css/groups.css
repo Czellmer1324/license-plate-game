@@ -1,0 +1,549 @@
+/* =========================
+   SAME DESIGN SYSTEM
+========================= */
+
+:root {
+    --font-sm: clamp(0.75rem, 1.5vw, 0.95rem);
+    --font-md: clamp(0.9rem, 2vw, 1.1rem);
+    --font-lg: clamp(1.2rem, 3vw, 1.8rem);
+
+    --bg: #f5f7fb;
+
+    --glass: rgba(255, 255, 255, 0.65);
+    --glass-strong: rgba(255, 255, 255, 0.8);
+
+    --border: rgba(0, 0, 0, 0.08);
+
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 999px;
+
+    --text-sm: clamp(0.8rem, 1.2vw, 0.95rem);
+    --text-md: clamp(0.95rem, 2vw, 1.2rem);
+    --text-lg: clamp(1.3rem, 3vw, 2.2rem);
+
+    --blur: 12px;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: #1a1a1a;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* =========================
+   DROPDOWN (IDENTICAL)
+========================= */
+
+.dropdown {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.dropbtn {
+    background: var(--glass);
+    color: #1a1a1a;
+
+    border: 1px solid var(--border);
+
+    padding: 8px 16px;
+
+    font-size: var(--font-sm);
+
+    border-radius: var(--radius-lg);
+
+    cursor: pointer;
+
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+
+    transition: all 0.2s ease;
+}
+
+.dropbtn:hover {
+    transform: translateY(-1px);
+    background: var(--glass-strong);
+}
+
+.dropdown-content {
+    position: absolute;
+    right: 0;
+    top: 100%;
+
+    min-width: 180px;
+
+    padding: 0.5rem;
+
+    background: var(--glass);
+
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow);
+
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+
+    transition: all 0.2s ease;
+
+    z-index: 1000;
+}
+
+.dropdown-content.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.dropdown-content button {
+    width: 100%;
+    text-align: left;
+
+    padding: 10px 12px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #1a1a1a;
+
+    cursor: pointer;
+
+    border-radius: 10px;
+
+    transition: background 0.2s ease;
+}
+
+.dropdown-content button:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* =========================
+   PAGE CONTAINER
+========================= */
+
+.container {
+    max-width: 700px;
+    margin: 4rem auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    padding: 1rem;
+}
+
+.container h1 {
+    text-align: center;
+    font-size: var(--text-lg);
+    margin: 0;
+}
+
+/* =========================
+   SECTIONS (same glass card)
+========================= */
+
+.section {
+    background: var(--glass);
+
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow);
+
+    padding: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.section-header {
+    font-size: var(--text-md);
+    font-weight: 600;
+    text-align: center;
+}
+
+/* =========================
+   LIST AREAS
+========================= */
+
+.scrollable-list {
+    max-height: 220px;
+
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.5rem;
+}
+
+/* Scrollbar styling (same feel) */
+
+.scrollable-list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.25) transparent;
+}
+
+.scrollable-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+}
+
+/* =========================
+   LIST ITEMS
+========================= */
+
+.list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0.75rem;
+
+    border-radius: var(--radius-sm);
+
+    background: rgba(255,255,255,0.5);
+
+    border: 1px solid var(--border);
+
+    font-size: var(--font-sm);
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.list-item:hover {
+    background: var(--glass-strong);
+    transform: translateY(-1px);
+}
+
+.invite-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.invite-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#memberGroupsList .list-item {
+    justify-content: center;
+    text-align: center;
+}
+
+/* =========================
+   BUTTON SYSTEM (MATCHED)
+========================= */
+
+button {
+    font-family: inherit;
+}
+
+.invite-actions button {
+    border: none;
+    border-radius: 999px;
+
+    padding: 6px 12px;
+
+    font-size: var(--font-sm);
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+
+    white-space: nowrap;
+}
+
+.accept-btn {
+    background: #22c55e;
+    color: white;
+}
+
+.accept-btn:hover {
+    background: #16a34a;
+}
+
+.decline-btn {
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+
+    border: 1px solid rgba(220, 38, 38, 0.25);
+}
+
+.decline-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.invite-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.manage-btn {
+    background: #3b82f6;
+    color: white;
+
+    border: none;
+
+    border-radius: var(--radius-lg);
+
+    padding: 6px 14px;
+
+    font-size: var(--font-sm);
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.manage-btn:hover {
+    background: #2563eb;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty-state {
+    text-align: center;
+    font-size: var(--font-sm);
+    color: #666;
+}
+
+#ownedGroupArea .empty-state{
+    width: 100%;
+}
+
+/* =========================
+   CREATE GROUP MODAL
+========================= */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0,0,0,0.35);
+
+    z-index: 100;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal-card {
+    width: 90%;
+    max-width: 420px;
+
+    background: var(--glass);
+
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow);
+
+    padding: 1.5rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.modal-card h2 {
+    margin: 0;
+    text-align: center;
+    font-size: var(--text-md);
+}
+
+.modal-subtitle {
+    text-align: center;
+    font-size: var(--font-sm);
+    color: #555;
+}
+
+.inputField {
+    display: flex;
+    flex-direction: column;
+}
+
+.inputField label {
+    font-size: var(--font-sm);
+    margin-bottom: 0.25rem;
+}
+
+.inputField input,
+.inputField textarea {
+    padding: 0.6rem;
+
+    border-radius: var(--radius-sm);
+
+    border: 1px solid var(--border);
+
+    font-size: var(--font-sm);
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+
+    gap: 0.5rem;
+
+    margin-top: 0.5rem;
+}
+
+.primary-btn {
+    background: #3b82f6;
+    color: white;
+
+    border: none;
+
+    border-radius: var(--radius-lg);
+
+    padding: 8px 14px;
+
+    cursor: pointer;
+}
+
+.primary-btn:hover {
+    background: #2563eb;
+}
+
+.secondary-btn {
+    background: var(--glass);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    padding: 8px 14px;
+
+    cursor: pointer;
+}
+
+.secondary-btn:hover {
+    background: var(--glass-strong);
+}
+
+.section-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    padding: 0.75rem;
+
+    border-radius: var(--radius-sm);
+
+    background: rgba(255,255,255,0.4);
+
+    border: 1px solid var(--border);
+}
+
+.section-block h3 {
+    margin: 0;
+    font-size: var(--font-md);
+    text-align: center;
+}
+
+/* =========================
+   DANGER ZONE
+========================= */
+
+.danger-zone {
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    background: rgba(220, 38, 38, 0.05);
+}
+
+.danger-btn {
+    background: rgba(220, 38, 38, 0.12);
+    color: #dc2626;
+
+    border: 1px solid rgba(220, 38, 38, 0.25);
+
+    border-radius: var(--radius-lg);
+
+    padding: 10px;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.danger-btn:hover {
+    background: rgba(220, 38, 38, 0.2);
+}
+
+/* =========================
+   MEMBER LIST
+========================= */
+
+#memberList {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* =========================
+   SCROLLBAR (matches app)
+========================= */
+
+.modal-card::-webkit-scrollbar,
+#memberList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-card::-webkit-scrollbar-thumb,
+#memberList::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .container {
+        margin-top: 3.5rem;
+        padding: 0.75rem;
+    }
+
+    .scrollable-list {
+        max-height: 180px;
+    }
+
+}

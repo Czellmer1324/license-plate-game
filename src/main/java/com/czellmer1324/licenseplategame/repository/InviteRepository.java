@@ -11,4 +11,5 @@ import java.util.List;
 public interface InviteRepository extends CrudRepository<Invite, Long> {
     boolean existsByGroupAndUser(Group group, User user);
     List<GetInviteDTO> findAllByUserUserId(int userId);
+    void deleteAllInBatchByGroupGroupId(long groupId);
 }
