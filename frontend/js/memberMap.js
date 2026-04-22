@@ -5,6 +5,11 @@ document.getElementById("dropDownBtn").addEventListener("click", function (event
     event.stopPropagation();
 });
 
+const color = JSON.parse(localStorage.getItem("userInfo"))["color"];
+if (color !== null) {
+    document.documentElement.style.setProperty('--map-color', color + "BF");
+}
+
 // Close the dropdown if the user clicks outside of it
 window.onclick = function(event) {
     if (!event.target.closest('.dropdown')) {
