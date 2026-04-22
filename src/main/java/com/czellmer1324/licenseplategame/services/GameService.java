@@ -25,6 +25,7 @@ public class GameService {
     private final UserRepository userRepository;
     private final Utils util;
 
+    @Transactional
     public ServiceResponse markState(SpotStateDTO info) {
         Optional<User> opUser = util.getUserFromAuth();
 
@@ -45,15 +46,16 @@ public class GameService {
 
         try {
             SpottedStates newSpot = gameRepository.save(new SpottedStates(manager.getReference(User.class, user.getUserId()), info.stateCode()));
-            user.addFound();
-            userRepository.save(user);
+            userRepository.incrementFoundStateCount(user.getUserId());
 
             return new ServiceResponse(Map.of( "spottedId", newSpot.getSpottedId(), "stateCode", newSpot.getStateCode()), HttpStatus.CREATED);
         } catch (Exception e) {
+            IO.println(e);
             return new ServiceResponse(Map.of("Message", "Something went wrong please try again"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @Transactional
     public ServiceResponse unmarkState(Long id) {
         Optional<User> opUser = util.getUserFromAuth();
 
@@ -69,8 +71,7 @@ public class GameService {
 
         try {
             gameRepository.deleteById(id);
-            user.subtractFound();
-            userRepository.save(user);
+            userRepository.decrementFoundStateCount(user.getUserId());
             return new ServiceResponse(Map.of("Message", "Unmarked successfully"), HttpStatus.OK);
         } catch (Exception e) {
             return new ServiceResponse(Map.of("Message", "Something went wrong please try again"), HttpStatus.INTERNAL_SERVER_ERROR);
