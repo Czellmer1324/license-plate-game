@@ -19,6 +19,7 @@
     --text-sm: clamp(0.8rem, 1.2vw, 0.95rem);
     --text-md: clamp(0.95rem, 2vw, 1.2rem);
     --text-lg: clamp(1.3rem, 3vw, 2.2rem);
+    --map-color: #008000BF;
 
     --blur: 12px;
 }
@@ -287,7 +288,7 @@ body {
 }
 
 #stateList .found {
-    background: rgba(95, 11, 151, 0.50);
+    background: var(--map-color);
 }
 
 #stateList .notFound:hover {
@@ -315,7 +316,7 @@ path {
 }
 
 .mapFound {
-    fill: rgb(95 11 151 / 0.8);
+    fill: var(--map-color);
 }
 
 /* =========================
@@ -336,4 +337,118 @@ path {
     .list-panel {
         padding: 0.75rem;
     }
+}
+
+/* =========================
+   MODAL OVERLAY
+========================= */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.35);
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition: opacity 0.2s ease;
+
+    z-index: 9999;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* =========================
+   MODAL CARD
+========================= */
+
+.modal-card {
+    width: min(360px, 90vw);
+
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+
+    padding: 1.5rem;
+
+    text-align: center;
+
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+}
+
+.modal-overlay.show .modal-card {
+    transform: scale(1);
+}
+
+.modal-card h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+}
+
+.modal-card p {
+    margin: 0.5rem 0 1rem;
+    font-size: var(--text-md, 1rem);
+    color: #333;
+}
+
+/* =========================
+   COLOR INPUT
+========================= */
+
+#mapColorPicker {
+    width: 100%;
+    height: 50px;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+
+    margin-bottom: 1rem;
+}
+
+/* =========================
+   BUTTONS (reuse your style)
+========================= */
+
+.modal-card button {
+    width: 100%;
+    margin-top: 0.5rem;
+
+    padding: 0.75rem;
+
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+
+    cursor: pointer;
+
+    font-size: var(--text-md, 1rem);
+
+    transition: all 0.2s ease;
+}
+
+#applyColorBtn {
+    background: #3b82f6;
+    color: white;
+}
+
+#applyColorBtn:hover {
+    background: #2563eb;
 }

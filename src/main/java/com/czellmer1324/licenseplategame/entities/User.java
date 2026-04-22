@@ -25,6 +25,8 @@ public class User {
     private String password;
     @Column(name = "num_found", nullable = false)
     private int numFound;
+    @Column(name = "color")
+    private String color;
 
     public User(String userName, String firstName, String lastName, String email, String password) {
         this.userName = userName;

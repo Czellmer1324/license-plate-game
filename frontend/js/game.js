@@ -1,4 +1,4 @@
-const url = "http://localhost:8080/game";
+const url = "http://localhost:8080";
 const found = new Map;
 const states = new Map([
     ["Arizona", 'AZ'],
@@ -57,6 +57,7 @@ const states = new Map([
 window.addEventListener("load", function() {
     replaceUserName();
     createStateList();
+    changeMapColor();
 });
 
 document.getElementById("groupButton").addEventListener("click", function () {
@@ -66,6 +67,14 @@ document.getElementById("groupButton").addEventListener("click", function () {
 document.getElementById("logOutBtn").addEventListener("click", function () {
     localStorage.clear();
     window.location.replace("index.html")
+})
+
+document.getElementById("changeColorBtn").addEventListener('click', ()=> {
+    document.getElementById("colorModal").classList.add("show");
+})
+
+document.getElementById("closeColorBtn").addEventListener('click', ()=> {
+    document.getElementById("colorModal").classList.remove("show");
 })
 
 document.getElementById("clearAllBtn").addEventListener("click", function () {
@@ -118,7 +127,7 @@ function replaceUserName() {
 }
 
 async function clearAllMarkedStates() {
-    const response = await fetch(url + "/unmark-all", {
+    const response = await fetch(url + "/game/unmark-all", {
         method: "DELETE",
         headers: {
             'Authorization': "Bearer " + localStorage.getItem("jwt")
@@ -197,7 +206,7 @@ function stateClick(id) {
 
 async function unmarkState(stateCode, button) {
     const markedId = found.get(stateCode);
-    const response = await fetch(url + "/unmark-state/" + markedId, {
+    const response = await fetch(url + "/game/unmark-state/" + markedId, {
         method: "DELETE",
         headers: {
             'Authorization': "Bearer " + localStorage.getItem("jwt")
@@ -233,7 +242,7 @@ async function markState(stateCode, button) {
     const requestObj = {
         "stateCode": stateCode
     }
-    const response = await fetch(url + "/mark-state", {
+    const response = await fetch(url + "/game/mark-state", {
         method: "POST",
         headers: {
             'Authorization': "Bearer " + localStorage.getItem("jwt"),
@@ -268,7 +277,7 @@ async function markState(stateCode, button) {
 }
 
 async function getUserFoundStates() {
-    const response = await fetch(url + "/marked", {
+    const response = await fetch(url + "/game/marked", {
         method: 'GET',
         headers: {'Authorization': "Bearer " + localStorage.getItem("jwt")}
     });
@@ -310,5 +319,56 @@ function filterStates() {
         } else {
             button.classList.add("hidden");
         }
+    }
+}
+
+function changeMapColor() {
+    const color = JSON.parse(localStorage.getItem("userInfo"))["color"];
+    if (color !== null) {
+        document.getElementById("mapColorPicker").value = color;
+        document.documentElement.style.setProperty('--map-color', color + "BF");
+    }
+}
+
+document.getElementById("applyColorBtn").addEventListener('click', ()=> {
+    const buttonClicked = document.getElementById("applyColorBtn");
+    buttonClicked.disabled = true;
+    const color = document.getElementById("mapColorPicker").value;
+    changeUserColor(color).then(() => {
+        buttonClicked.disabled = false;
+        document.getElementById("colorModal").classList.remove("show");
+        const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+        userInfo["color"] = color;
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        changeMapColor();
+    }).catch(() => {
+        buttonClicked.disabled = false;
+    })
+})
+
+async function changeUserColor(color) {
+    const requestObj = {
+        "color" : color
+    }
+
+    const response = await fetch(url + "/user/change-color", {
+        method : "PUT",
+        headers : {
+           'Authorization': "Bearer " + localStorage.getItem("jwt"),
+            'Content-Type': 'application/json'
+        },
+        body : JSON.stringify(requestObj)
+    });
+
+    if (response.ok) {
+        return await response.json();
+    } else if (response.status === 401) {
+        alert("you need to log in again!");
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+    } else {
+        alert("something went wrong please try again");
+        throw new Error("Something went wrong");
     }
 }

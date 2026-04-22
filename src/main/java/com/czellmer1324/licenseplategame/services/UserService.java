@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,10 +78,12 @@ public class UserService {
 
         if (opUser.isPresent()) {
             User user = opUser.get();
-            Map<String, String> response = Map.of("User Name", user.getUserName(),
-                    "firstName", user.getFirstName(),
-                    "lastName", user.getLastName(),
-                    "email", user.getEmail());
+            Map<String, String> response = new HashMap<>();
+            response.put("User Name", user.getUserName());
+            response.put("firstName", user.getFirstName());
+            response.put("lastName", user.getLastName());
+            response.put("email", user.getEmail());
+            response.put("color", user.getColor());
             return new ServiceResponse(response, HttpStatus.OK);
         } else {
             return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
@@ -110,6 +113,20 @@ public class UserService {
         Optional<User> opUser = utils.getUserFromAuth();
         if (opUser.isEmpty()) return new ServiceResponse(Map.of("Message", "User not authenticated"), HttpStatus.UNAUTHORIZED);
         return inviteService.declineInvite(opUser.get(), inviteId);
+    }
+
+    public ServiceResponse changeColor(String color) {
+        Optional<User> opUser = utils.getUserFromAuth();
+        if (opUser.isEmpty()) return utils.noAuthResponse();
+        User user = opUser.get();
+        user.setColor(color);
+
+        try {
+            userRepository.save(user);
+            return new ServiceResponse(Map.of("Message", "Color changed"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ServiceResponse(Map.of("Message", "Something went wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     protected Optional<User> getUserByUserName(String userName) {

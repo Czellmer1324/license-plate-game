@@ -20,6 +20,7 @@
 
                     <div id="dropdownLinks" class="dropdown-content">
                         <button id="groupButton">Groups Page</button>
+                        <button id="changeColorBtn">Change Map Color</button>
                         <button id="logOutBtn">Logout</button>
                         <button id="clearAllBtn">Clear Map</button>
                     </div>
@@ -258,6 +259,19 @@
                     <ul id="stateList">
                         <!-- Filled with JS code -->
                     </ul>
+                </div>
+            </div>
+
+            <div id="colorModal" class="modal-overlay">
+                <div class="modal-card">
+                    <h2>Choose Map Color</h2>
+
+                    <p>Pick a color for your found states:</p>
+
+                    <input type="color" id="mapColorPicker">
+
+                    <button id="applyColorBtn">Apply Color</button>
+                    <button id="closeColorBtn" class="secondary-btn">Cancel</button>
                 </div>
             </div>
         </main>

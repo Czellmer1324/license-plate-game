@@ -49,4 +49,10 @@ public class UserController {
         ServiceResponse info = service.declineInvite(requestBody.inviteId());
         return ResponseEntity.status(info.code()).body(info.response());
     }
+
+    @PutMapping("/change-color")
+    public ResponseEntity<?> changeColor(@RequestBody ChangeColorDTO colorDTO) {
+        ServiceResponse info = service.changeColor(colorDTO.color());
+        return ResponseEntity.status(info.code()).body(info.response());
+    }
 }
