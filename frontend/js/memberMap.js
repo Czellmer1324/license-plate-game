@@ -5,7 +5,7 @@ document.getElementById("dropDownBtn").addEventListener("click", function (event
     event.stopPropagation();
 });
 
-const color = JSON.parse(localStorage.getItem("userInfo"))["color"];
+const color = currentMember["color"];
 if (color !== null) {
     document.documentElement.style.setProperty('--map-color', color + "BF");
 }

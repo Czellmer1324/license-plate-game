@@ -124,7 +124,8 @@ function createMemberCards() {
                     const memberInfo = {
                         "userName" : member["userName"],
                         "statesFound" : member["numFound"],
-                        "statesFoundList" : memberStates
+                        "statesFoundList" : memberStates,
+                        "color" : member["userColor"]
                     }
 
                     localStorage.setItem("memberInfo", JSON.stringify(memberInfo));
