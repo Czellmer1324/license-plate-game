@@ -1,4 +1,4 @@
-const url = "https://license-plate-game-backend.onrender.com";
+const url = "http://localhost:8080";
 const found = new Map;
 const states = new Map([
     ["Arizona", 'AZ'],
@@ -53,6 +53,17 @@ const states = new Map([
     ['Wisconsin', 'WI'],
     ['Wyoming', 'WY']
 ]);
+
+let colorPicker;
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    colorPicker = new iro.ColorPicker("#colorWheel", {
+        width: 220,
+        color: "#3b82f6"
+    });
+
+});
 
 window.addEventListener("load", function() {
     replaceUserName();
@@ -320,54 +331,54 @@ function filterStates() {
             button.classList.add("hidden");
         }
     }
-    function changeMapColor() {
-        const color = JSON.parse(localStorage.getItem("userInfo"))["color"];
-        if (color !== null) {
-            document.getElementById("mapColorPicker").value = color;
-            document.documentElement.style.setProperty('--map-color', color + "BF");
-        }
+}
+
+function changeMapColor() {
+    const color = JSON.parse(localStorage.getItem("userInfo"))["color"];
+    if (color !== null) {
+        document.documentElement.style.setProperty('--map-color', color + "BF");
+    }
+}
+
+document.getElementById("applyColorBtn").addEventListener('click', ()=> {
+    const buttonClicked = document.getElementById("applyColorBtn");
+    buttonClicked.disabled = true;
+    const color = colorPicker.color.hexString;
+    changeUserColor(color).then(() => {
+        buttonClicked.disabled = false;
+        document.getElementById("colorModal").classList.remove("show");
+        const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+        userInfo["color"] = color;
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        changeMapColor();
+    }).catch(() => {
+        buttonClicked.disabled = false;
+    })
+})
+
+async function changeUserColor(color) {
+    const requestObj = {
+        "color" : color
     }
 
-    document.getElementById("applyColorBtn").addEventListener('click', ()=> {
-        const buttonClicked = document.getElementById("applyColorBtn");
-        buttonClicked.disabled = true;
-        const color = document.getElementById("mapColorPicker").value;
-        changeUserColor(color).then(() => {
-            buttonClicked.disabled = false;
-            document.getElementById("colorModal").classList.remove("show");
-            const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-            userInfo["color"] = color;
-            localStorage.setItem("userInfo", JSON.stringify(userInfo));
-            changeMapColor();
-        }).catch(() => {
-            buttonClicked.disabled = false;
-        })
-    })
+    const response = await fetch(url + "/user/change-color", {
+        method : "PUT",
+        headers : {
+           'Authorization': "Bearer " + localStorage.getItem("jwt"),
+            'Content-Type': 'application/json'
+        },
+        body : JSON.stringify(requestObj)
+    });
 
-    async function changeUserColor(color) {
-        const requestObj = {
-            "color" : color
-        }
-
-        const response = await fetch(url + "/user/change-color", {
-            method : "PUT",
-            headers : {
-                'Authorization': "Bearer " + localStorage.getItem("jwt"),
-                'Content-Type': 'application/json'
-            },
-            body : JSON.stringify(requestObj)
-        });
-
-        if (response.ok) {
-            return await response.json();
-        } else if (response.status === 401) {
-            alert("you need to log in again!");
-            localStorage.clear();
-            window.location.replace("index.html");
-            throw new Error("Unauthorized");
-        } else {
-            alert("something went wrong please try again");
-            throw new Error("Something went wrong");
-        }
+    if (response.ok) {
+        return await response.json();
+    } else if (response.status === 401) {
+        alert("you need to log in again!");
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+    } else {
+        alert("something went wrong please try again");
+        throw new Error("Something went wrong");
     }
 }

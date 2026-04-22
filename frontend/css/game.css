@@ -412,16 +412,16 @@ path {
    COLOR INPUT
 ========================= */
 
-#mapColorPicker {
-    width: 100%;
-    height: 50px;
+#colorWheel {
+    margin: 1rem auto;
+    display: flex;
+    justify-content: center;
+}
 
-    border: none;
-    background: transparent;
-
-    cursor: pointer;
-
-    margin-bottom: 1rem;
+@media (max-width: 600px) {
+    #colorWheel {
+        transform: scale(0.9);
+    }
 }
 
 /* =========================
