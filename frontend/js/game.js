@@ -54,6 +54,17 @@ const states = new Map([
     ['Wyoming', 'WY']
 ]);
 
+let colorPicker;
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    colorPicker = new iro.ColorPicker("#colorWheel", {
+        width: 220,
+        color: "#3b82f6"
+    });
+
+});
+
 window.addEventListener("load", function() {
     replaceUserName();
     createStateList();
@@ -325,7 +336,6 @@ function filterStates() {
 function changeMapColor() {
     const color = JSON.parse(localStorage.getItem("userInfo"))["color"];
     if (color !== null) {
-        document.getElementById("mapColorPicker").value = color;
         document.documentElement.style.setProperty('--map-color', color + "BF");
     }
 }
@@ -333,7 +343,7 @@ function changeMapColor() {
 document.getElementById("applyColorBtn").addEventListener('click', ()=> {
     const buttonClicked = document.getElementById("applyColorBtn");
     buttonClicked.disabled = true;
-    const color = document.getElementById("mapColorPicker").value;
+    const color = colorPicker.color.hexString;
     changeUserColor(color).then(() => {
         buttonClicked.disabled = false;
         document.getElementById("colorModal").classList.remove("show");
