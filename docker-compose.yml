@@ -9,3 +9,49 @@ services:
       POSTGRES_USER: newuser
       POSTGRES_PASSWORD: changeinprod!
       POSTGRES_DB: license-plate-game
+    volumes:
+      - pgdata:/var/lib/postgresql
+    networks:
+        - license-plate-game-network
+
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://licenseDB:5432/license-plate-game
+      - SPRING_DATASOURCE_PASSWORD=changeinprod!
+      - SPRING_DATASOURCE_USERNAME=newuser
+      - JWT_SECRET=saQZM3kSADzy2XPFIuqhyXAs28A495Ta8R2QBeTKr8o
+    depends_on:
+      - db
+    networks:
+      - license-plate-game-network
+
+  frontend:
+    image: nginx:alpine
+    container_name: web-frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    command: >
+      sh -c "echo 'server { 
+        listen 80; 
+        location / { root /usr/share/nginx/html; index index.html; try_files $$uri $$uri/ /index.html; } 
+        location /api/ { proxy_pass http://backend:8080; } 
+      }' > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+    depends_on:
+      - backend
+    networks:
+      - license-plate-game-network
+
+networks:
+  license-plate-game-network:
+    driver: bridge
+
+volumes:
+  pgdata:
+    driver: local

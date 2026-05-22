@@ -1,4 +1,4 @@
-const url = "http://localhost:8080";
+const url = "/api";
 let invites;
 let ownedGroup;
 let groups;

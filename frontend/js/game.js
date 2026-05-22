@@ -1,4 +1,4 @@
-const url = "http://localhost:8080";
+const url = "/api";
 const found = new Map;
 const states = new Map([
     ["Arizona", 'AZ'],
