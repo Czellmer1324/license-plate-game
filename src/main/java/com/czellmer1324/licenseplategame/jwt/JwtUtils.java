@@ -35,7 +35,6 @@ public class JwtUtils {
         return Jwts.builder()
                 .subject(String.valueOf(id))
                 .issuedAt(new Date())
-                .expiration(new Date((new Date()).getTime() + expiration))
                 .signWith(key())
                 .compact();
     }
